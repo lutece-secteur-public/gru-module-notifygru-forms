@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>       
+          Module NotifyGru Forms
+        </title>
+    </properties>
+    <body>
+        <section name="Module NotifyGru Forms">
+            <subsection name="Introduction">
+                <p>
+                Ce module implémente le mécanisme de <em>provider</em> pour les formulaires. 
+                Il permet de fournir les données des formulaires dans les notifications, <em>via</em> la tâche de Workflow de notification. 
+                </p>
+                <p>
+                <strong>Note :</strong> Le mécanisme de <em>provider</em> et la tâche de notification sont définis dans le module <code>gru-module-workflow-notifygru</code>.
+                </p>
+            </subsection>
+            <subsection name="Usage">
+                <p>
+                <strong>Prérequis:</strong> Le formulaire est créé.
+                </p>
+                <p>
+                Dans la tâche de notification (du module <code>gru-module-workflow-notifygru</code>), certaines informations peuvent être configurées à l'IHM (comme le contenu de l'email) et d'autres non (comme l'id de connexion de l'usager).
+                </p>
+                <p>
+                Pour les informations qui ne peuvent pas être configurées à l'IHM, ce module utilise le module <code>gru-module-notifygru-mapping-manager</code> pour mapper les entrées du formulaire avec les données à envoyer dans la notification.
+                Par conséquent, allez sur l'<code>AdminFeature</code> dédiée du module <code>gru-module-notifygru-mapping-manager</code> pour configurer le mapping pour le formulaire.
+                </p>
+                <p>
+                Ensuite, ajoutez la tâche de notification dans le Workflow associé au formulaire.
+                Configurez la tâche :
+                <ul>
+                    <li>Dans la première étape de la configuration, choisissez votre formulaire et sauvegardez.</li>
+                    <li>Dans la seconde étape de la configuration, vous pouvez ajouter les entrées de formulaire dans les notifications en utilisant les signets. Le tableau à droite de la page vous indique quels signets vous pouvez utiliser.</li>
+                </ul> 
+                </p>  
+            </subsection>
+        </section>
+    </body>
+</document>
+

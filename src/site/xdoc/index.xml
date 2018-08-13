@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>       
+          Module NotifyGru Forms
+        </title>
+    </properties>
+    <body>
+        <section name="Module NotifyGru Forms">
+            <subsection name="Introduction">
+                <p>
+                This module implements the provider mechanism for forms
+                It enables to provide the forms data into the notifications, <em>via</em> the Workflow notification task.
+                </p>
+                <p>
+                <strong>Note:</strong> The provider mechanism and the notification task are defined in the module <code>gru-module-workflow-notifygru</code>.
+                </p>
+            </subsection>
+            <subsection name="Usage">
+                <p>
+                <strong>Prerequisite:</strong> The form is created.
+                </p>
+                <p>
+                In the notification task (from the <code>gru-module-workflow-notifygru</code>), some information can be configured from the GUI (like the content of the email) and some others cannot (like the connection id of the user).
+                </p>
+                <p>
+                For the information that cannot be configured in the GUI, this module uses the module <code>gru-module-notifygru-mapping-manager</code> to map the entries of the form with the data to send in the notification.
+                Thus, go to the dedicated <code>AdminFeature</code> of the module <code>gru-module-notifygru-mapping-manager</code> to configure the mapping for the forms.
+                </p>
+                <p>
+                Then, add the notification task in the Workflow associated to the forms.
+                Configure the task:
+                <ul>
+                    <li>In the first step of the configuration, choose your form and save.</li>
+                    <li>In the second step of the configuration, you can add the form entries in the notifications by using the markers. The table in the right side of the page tells you which markers you can use.</li>
+                </ul> 
+                </p>  
+            </subsection>
+        </section>
+    </body>
+</document>
+

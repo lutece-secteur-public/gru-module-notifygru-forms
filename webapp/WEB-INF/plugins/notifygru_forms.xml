@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><plug-in>
+    
+     <class>fr.paris.lutece.plugins.notifygru.modules.forms.NotifyGruFormsPlugin</class>
+    <name>notifygru-forms</name>
+     <version>1.2.2-SNAPSHOT</version>
+    <documentation/>
+    <installation/>
+    <changes/>
+    <user-guide/>
+    <description>module.notifygru.forms.module.description</description>
+       <provider>module.notifygru.forms.module.provider</provider>
+    <provider-url>http://lutece.paris.fr</provider-url>
+       <icon-url>images/admin/skin/plugins/notifygru/forms/provider.png</icon-url>
+    <copyright>Copyright 2001-2018 Mairie de Paris</copyright>
+	<core-version-dependency>
+		<min-core-version>6.0.0</min-core-version>
+		<max-core-version/>	
+	</core-version-dependency>
+	
+	<!-- if the plugin must have a connection pool with parameter : 1 - yes, 0 - no -->	
+    <db-pool-required>1</db-pool-required>
+
+</plug-in>
