@@ -60,7 +60,7 @@ public final class NotifyGruFormsService implements INotifyGruFormsService
     @Override
     public List<FormQuestionResponse> getListFormQuestionResponse( FormResponse formResponse ) 
     {
-        return FormQuestionResponseHome.getFormQuestionResponseListByFormResponseForSaving( formResponse.getId( ) );
+        return FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( formResponse.getId( ) );
     }
 
     /**
@@ -132,7 +132,7 @@ public final class NotifyGruFormsService implements INotifyGruFormsService
      */
     private String getFormResponseStringValue(int nIdResponse, FormResponse formResponse)
     {
-        return FormQuestionResponseHome.getFormQuestionResponseListByFormResponseForSaving( formResponse.getId( ) )
+        return FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( formResponse.getId( ) )
                 .get( nIdResponse - 1 )
                 .getEntryResponse( )
                 .get( 0 )

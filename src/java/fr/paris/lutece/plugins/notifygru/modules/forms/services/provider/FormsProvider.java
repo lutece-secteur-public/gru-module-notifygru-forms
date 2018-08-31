@@ -207,7 +207,7 @@ public class FormsProvider implements IProvider
 
         for ( FormQuestionResponse formQuestionResponse : listFormQuestionResponse )
         {
-            NotifyGruMarker notifyGruMarker = new NotifyGruMarker( MARK_POSITION + formQuestionResponse.getIdQuestion( ) );
+            NotifyGruMarker notifyGruMarker = new NotifyGruMarker( MARK_POSITION + formQuestionResponse.getQuestion().getId( ) );
             notifyGruMarker.setValue( ResponseHome.findByPrimaryKey( formQuestionResponse.getId( ) ).getToStringValueResponse() );
             result.add( notifyGruMarker );
         }
