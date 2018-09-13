@@ -43,6 +43,9 @@ import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.business.NotifygruMappingManager;
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.business.NotifygruMappingManagerHome;
 import fr.paris.lutece.plugins.notifygru.modules.forms.services.NotifyGruFormsService;
@@ -208,7 +211,7 @@ public class FormsProvider implements IProvider
         for ( FormQuestionResponse formQuestionResponse : listFormQuestionResponse )
         {
             NotifyGruMarker notifyGruMarker = new NotifyGruMarker( MARK_POSITION + formQuestionResponse.getQuestion().getId( ) );
-            notifyGruMarker.setValue( ResponseHome.findByPrimaryKey( formQuestionResponse.getId( ) ).getToStringValueResponse() );
+            notifyGruMarker.setValue( !CollectionUtils.isEmpty(formQuestionResponse.getEntryResponse( ))?formQuestionResponse.getEntryResponse( ).get( 0 ) .getToStringValueResponse():"" );
             result.add( notifyGruMarker );
         }
 
