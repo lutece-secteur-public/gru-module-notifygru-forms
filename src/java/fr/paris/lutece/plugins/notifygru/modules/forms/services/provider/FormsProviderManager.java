@@ -42,7 +42,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.service.AbstractProviderManagerWithMapping;
 import fr.paris.lutece.plugins.workflow.modules.notifygru.service.provider.IProvider;
 import fr.paris.lutece.plugins.workflow.modules.notifygru.service.provider.ProviderDescription;
@@ -101,8 +100,8 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
 
             if ( ( workflow.getId( ) == form.getIdWorkflow( ) ) )
             {
-                ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ),
-                        I18nService.getLocalizedString( TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
+                ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ), I18nService.getLocalizedString(
+                        TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
                 collectionProviderDescriptions.add( providerDescription );
             }
         }
@@ -118,8 +117,8 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
     {
         Form form = FormHome.findByPrimaryKey( Integer.parseInt( strProviderId ) );
 
-        ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ), I18nService.getLocalizedString(
-                TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
+        ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ), I18nService.getLocalizedString( TITLE_I18NKEY,
+                I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
 
         providerDescription.setMarkerDescriptions( FormsProvider.getProviderMarkerDescriptions( form ) );
 
@@ -143,11 +142,11 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
     {
         Collection<ProviderDescription> collectionProviderDescriptions = new ArrayList<>( );
         List<Form> listForms = FormHome.getFormList( );
-        
+
         for ( Form form : listForms )
         {
-            ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ), I18nService.getLocalizedString(
-                    TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
+            ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ), I18nService.getLocalizedString( TITLE_I18NKEY,
+                    I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
             collectionProviderDescriptions.add( providerDescription );
         }
 

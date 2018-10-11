@@ -96,16 +96,15 @@ public class FormsProvider implements IProvider
      */
     public FormsProvider( String strProviderManagerId, String strProviderId, ResourceHistory resourceHistory )
     {
-        //Get the form response from the resourceHistory
+        // Get the form response from the resourceHistory
         _formResponse = FormResponseHome.findByPrimaryKey( resourceHistory.getIdResource( ) );
 
-        //Load the mapping manager
-        _mapping = NotifygruMappingManagerHome.findByPrimaryKey( ProviderManagerUtil.buildCompleteProviderId( strProviderManagerId,
-                strProviderId ) );
+        // Load the mapping manager
+        _mapping = NotifygruMappingManagerHome.findByPrimaryKey( ProviderManagerUtil.buildCompleteProviderId( strProviderManagerId, strProviderId ) );
 
         if ( _mapping == null )
         {
-            throw new AppException( "No mapping found for the form " + _formResponse.getFormId()
+            throw new AppException( "No mapping found for the form " + _formResponse.getFormId( )
                     + ". Please check the configuration of the module-forms-mappingmanager." );
         }
 
@@ -210,8 +209,9 @@ public class FormsProvider implements IProvider
 
         for ( FormQuestionResponse formQuestionResponse : listFormQuestionResponse )
         {
-            NotifyGruMarker notifyGruMarker = new NotifyGruMarker( MARK_POSITION + formQuestionResponse.getQuestion().getId( ) );
-            notifyGruMarker.setValue( !CollectionUtils.isEmpty(formQuestionResponse.getEntryResponse( ))?formQuestionResponse.getEntryResponse( ).get( 0 ) .getToStringValueResponse():"" );
+            NotifyGruMarker notifyGruMarker = new NotifyGruMarker( MARK_POSITION + formQuestionResponse.getQuestion( ).getId( ) );
+            notifyGruMarker.setValue( !CollectionUtils.isEmpty( formQuestionResponse.getEntryResponse( ) ) ? formQuestionResponse.getEntryResponse( ).get( 0 )
+                    .getToStringValueResponse( ) : "" );
             result.add( notifyGruMarker );
         }
 
@@ -220,8 +220,9 @@ public class FormsProvider implements IProvider
 
     /**
      * Get the collection of NotifyGruMarker, for the given form
+     * 
      * @param form
-     *          The form
+     *            The form
      * @return the collection of the notifyGruMarkers
      */
     public static Collection<NotifyGruMarker> getProviderMarkerDescriptions( Form form )
@@ -236,19 +237,20 @@ public class FormsProvider implements IProvider
             notifyGruMarker.setDescription( formQuestion.getTitle( ) );
             collectionNotifyGruMarkers.add( notifyGruMarker );
         }
-        
+
         return collectionNotifyGruMarkers;
     }
 
     /**
      * Ghe the reference list of the questions / positions for the given provider id
+     * 
      * @param strProviderId
-     *          The provider id
-     * @return the reference list of the questions / positions. 
+     *            The provider id
+     * @return the reference list of the questions / positions.
      */
     public static ReferenceList getQuestionPositions( String strProviderId )
     {
-        return QuestionHome.getQuestionsReferenceListByForm( Integer.parseInt(strProviderId) );
+        return QuestionHome.getQuestionsReferenceListByForm( Integer.parseInt( strProviderId ) );
     }
 
 }

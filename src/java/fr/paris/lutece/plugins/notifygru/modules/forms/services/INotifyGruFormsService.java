@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.notifygru.modules.forms.services;
 
-
 import fr.paris.lutece.plugins.forms.business.FormQuestionResponse;
 import fr.paris.lutece.plugins.forms.business.FormResponse;
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.business.NotifygruMappingManager;
@@ -46,73 +45,82 @@ public interface INotifyGruFormsService
 {
     /**
      * Get the customer email
+     * 
      * @param mapping
-     *          The Notifygru Mapping manager
+     *            The Notifygru Mapping manager
      * @param formResponse
-     *          The form Response
+     *            The form Response
      * @return the customer email as a string
      */
     String getEmail( NotifygruMappingManager mapping, FormResponse formResponse );
 
     /**
      * Get the id demand with the given formResponse
+     * 
      * @param formResponse
-     *          The form response
+     *            The form response
      * @return the id demand
      */
     int getIdDemand( FormResponse formResponse );
 
     /**
      * Get the demand type id with the given form response
+     * 
      * @param mapping
-     *          The mapping Manager
+     *            The mapping Manager
      * @return the demand type id
      */
     int getIdDemandType( NotifygruMappingManager mapping );
 
     /**
      * Get the SMSPhone number
+     * 
      * @param mapping
-     *          The mapping Manager
+     *            The mapping Manager
      * @param formResponse
-     *          The form response
+     *            The form response
      * @return the SMS phone number
      */
     String getSMSPhoneNumber( NotifygruMappingManager mapping, FormResponse formResponse );
 
     /**
      * Get the connection id of the customer, with given NotifyGruMappingManager and given formResponse
+     * 
      * @param mapping
-     *              The mapping Manager
+     *            The mapping Manager
      * @param formResponse
-     *              The form response
+     *            The form response
      * @return the customer connection id, as a String
      */
     String getConnectionId( NotifygruMappingManager mapping, FormResponse formResponse );
 
     /**
      * Get the connection id of the customer, with given NotifyGruMappingManager and given formResponse
+     * 
      * @param mapping
-     *              The mapping Manager
+     *            The mapping Manager
      * @param formResponse
-     *              The form response
+     *            The form response
      * @return the customer connection id, as a String
      */
     String getCustomerId( NotifygruMappingManager mapping, FormResponse formResponse );
-    
+
     /**
-     * Get the demand reference, with given NotifyGruMappingManager and given formResponse 
+     * Get the demand reference, with given NotifyGruMappingManager and given formResponse
+     * 
      * @param mapping
-     *             The mapping Manager
+     *            The mapping Manager
      * @param formResponse
-     *              The form response
+     *            The form response
      * @return the demand reference as a String
      */
     String getDemandReference( NotifygruMappingManager mapping, FormResponse formResponse );
-    
+
     /**
      * Get the list of the form question response, with given formResponse
-     * @param formResponse the formResponse
+     * 
+     * @param formResponse
+     *            the formResponse
      * @return the formQuestionResponses objects as a list.
      */
     List<FormQuestionResponse> getListFormQuestionResponse( FormResponse formResponse );

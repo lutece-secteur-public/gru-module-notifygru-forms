@@ -58,7 +58,7 @@ public final class NotifyGruFormsService implements INotifyGruFormsService
      * {@inheritDoc}
      */
     @Override
-    public List<FormQuestionResponse> getListFormQuestionResponse( FormResponse formResponse ) 
+    public List<FormQuestionResponse> getListFormQuestionResponse( FormResponse formResponse )
     {
         return FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( formResponse.getId( ) );
     }
@@ -67,16 +67,16 @@ public final class NotifyGruFormsService implements INotifyGruFormsService
      * {@inheritDoc}
      */
     @Override
-    public String getEmail(NotifygruMappingManager mapping, FormResponse formResponse) 
+    public String getEmail( NotifygruMappingManager mapping, FormResponse formResponse )
     {
-        return getFormResponseStringValue( mapping.getEmail(), formResponse);
+        return getFormResponseStringValue( mapping.getEmail( ), formResponse );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getIdDemand( FormResponse formResponse) 
+    public int getIdDemand( FormResponse formResponse )
     {
         return formResponse.getId( );
     }
@@ -85,57 +85,60 @@ public final class NotifyGruFormsService implements INotifyGruFormsService
      * {@inheritDoc}
      */
     @Override
-    public int getIdDemandType(NotifygruMappingManager mapping) {
-        return mapping.getDemandeTypeId();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getSMSPhoneNumber(NotifygruMappingManager mapping, FormResponse formResponse) {
-        return getFormResponseStringValue( mapping.getMobilePhoneNumber(), formResponse);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getConnectionId(NotifygruMappingManager mapping, FormResponse formResponse) {
-        return getFormResponseStringValue( mapping.getConnectionId(), formResponse);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getCustomerId(NotifygruMappingManager mapping, FormResponse formResponse) {
-        return getFormResponseStringValue( mapping.getCustomerId( ), formResponse);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getDemandReference(NotifygruMappingManager mapping, FormResponse formResponse) 
+    public int getIdDemandType( NotifygruMappingManager mapping )
     {
-        return getFormResponseStringValue( mapping.getDemandReference( ), formResponse);
+        return mapping.getDemandeTypeId( );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSMSPhoneNumber( NotifygruMappingManager mapping, FormResponse formResponse )
+    {
+        return getFormResponseStringValue( mapping.getMobilePhoneNumber( ), formResponse );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getConnectionId( NotifygruMappingManager mapping, FormResponse formResponse )
+    {
+        return getFormResponseStringValue( mapping.getConnectionId( ), formResponse );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCustomerId( NotifygruMappingManager mapping, FormResponse formResponse )
+    {
+        return getFormResponseStringValue( mapping.getCustomerId( ), formResponse );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDemandReference( NotifygruMappingManager mapping, FormResponse formResponse )
+    {
+        return getFormResponseStringValue( mapping.getDemandReference( ), formResponse );
     }
 
     /**
      * Get the form response string value with given nIdResponse and given formResponse
-     * @param nIdResponse   
-     *              The id response
+     * 
+     * @param nIdResponse
+     *            The id response
      * @param formResponse
-     *              The form response
+     *            The form response
      * @return the form response String value
      */
-    private String getFormResponseStringValue(int nIdResponse, FormResponse formResponse)
+    private String getFormResponseStringValue( int nIdResponse, FormResponse formResponse )
     {
-        return FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( formResponse.getId( ) )
-                .stream( ).filter( response->response.getQuestion( ).getId()==nIdResponse).findFirst( ).get( )
-                .getEntryResponse( )
-                .get( 0 )
+        return FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( formResponse.getId( ) ).stream( )
+                .filter( response -> response.getQuestion( ).getId( ) == nIdResponse ).findFirst( ).get( ).getEntryResponse( ).get( 0 )
                 .getToStringValueResponse( );
     }
 }
