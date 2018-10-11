@@ -39,10 +39,14 @@ import fr.paris.lutece.plugins.forms.business.FormResponse;
 import fr.paris.lutece.plugins.forms.business.FormResponseHome;
 import fr.paris.lutece.plugins.forms.business.Question;
 import fr.paris.lutece.plugins.forms.business.QuestionHome;
+import fr.paris.lutece.plugins.forms.util.FormsConstants;
+import fr.paris.lutece.plugins.forms.web.admin.MultiviewFormResponseDetailsJspBean;
 import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -53,10 +57,13 @@ import fr.paris.lutece.plugins.workflow.modules.notifygru.service.provider.IProv
 import fr.paris.lutece.plugins.workflow.modules.notifygru.service.provider.NotifyGruMarker;
 import fr.paris.lutece.plugins.workflow.modules.notifygru.service.provider.ProviderManagerUtil;
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
+import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.ReferenceList;
+import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.plugins.notifygru.modules.forms.services.INotifyGruFormsService;
 
 /**
@@ -67,10 +74,14 @@ public class FormsProvider implements IProvider
 {
     // PROPERTY KEY
     private static final String PROPERTY_SMS_SENDER_NAME = "workflow-notifygruforms.gruprovider.sms.sendername";
-
-    // MARKS
+    // MESSAGE
+    private static final String MESSAGE_DESCRIPTION = "module.notifygru.forms.marker.provider.url.detail.reponse.description";
+    // MARKS;
     private static final String MARK_POSITION = "position_";
-
+    private static final String MARK_URL_ADMIN_RESPONSE = "url_admin_forms_response_detail";
+    //PARAMETERS
+    public static final String PARAMETER_VIEW_FORM_RESPONSE_DETAILS = "view_form_response_details";
+    public static final String PARAMETER_ID_FORM_RESPONSES = "id_form_response";
     // SERVICES
     private static INotifyGruFormsService _notifyGruFormsService = SpringContextService.getBean( NotifyGruFormsService.BEAN_SERVICE );
 
@@ -83,6 +94,7 @@ public class FormsProvider implements IProvider
     private final String _strDemandTypeId;
     private final FormResponse _formResponse;
     private final NotifygruMappingManager _mapping;
+    private final HttpServletRequest _request;
 
     /**
      * Constructor
@@ -92,9 +104,11 @@ public class FormsProvider implements IProvider
      * @param strProviderId
      *            the provider id. Corresponds to the {@code Forms} id. Used to retrieve the mapping.
      * @param resourceHistory
+     * 			the history source
+     * @param request
      *            the resource history. Corresponds to the {@link Record} object containing the data to provide
      */
-    public FormsProvider( String strProviderManagerId, String strProviderId, ResourceHistory resourceHistory )
+    public FormsProvider( String strProviderManagerId, String strProviderId, ResourceHistory resourceHistory, HttpServletRequest request )
     {
         //Get the form response from the resourceHistory
         _formResponse = FormResponseHome.findByPrimaryKey( resourceHistory.getIdResource( ) );
@@ -115,6 +129,7 @@ public class FormsProvider implements IProvider
         _strCustomerPhoneNumber = _notifyGruFormsService.getSMSPhoneNumber( _mapping, _formResponse );
         _strDemandReference = _notifyGruFormsService.getDemandReference( _mapping, _formResponse );
         _strDemandTypeId = String.valueOf( _notifyGruFormsService.getIdDemandType( _mapping ) );
+        _request = request;
     }
 
     /**
@@ -214,7 +229,12 @@ public class FormsProvider implements IProvider
             notifyGruMarker.setValue( !CollectionUtils.isEmpty(formQuestionResponse.getEntryResponse( ))?formQuestionResponse.getEntryResponse( ).get( 0 ) .getToStringValueResponse():"" );
             result.add( notifyGruMarker );
         }
-
+        NotifyGruMarker notifyGruMarkerUrl = new NotifyGruMarker( MARK_URL_ADMIN_RESPONSE );
+        UrlItem url = new UrlItem( AppPathService.getBaseUrl( _request ) + MultiviewFormResponseDetailsJspBean.CONTROLLER_JSP_NAME_WITH_PATH );
+        url.addParameter(  FormsConstants.PARAMETER_TARGET_VIEW ,  PARAMETER_VIEW_FORM_RESPONSE_DETAILS );
+        url.addParameter( PARAMETER_ID_FORM_RESPONSES, _formResponse.getId() );
+        notifyGruMarkerUrl.setValue(url.getUrl( ));
+        result.add( notifyGruMarkerUrl );
         return result;
     }
 
@@ -236,7 +256,9 @@ public class FormsProvider implements IProvider
             notifyGruMarker.setDescription( formQuestion.getTitle( ) );
             collectionNotifyGruMarkers.add( notifyGruMarker );
         }
-        
+        NotifyGruMarker notifyGruMarkerURl = new NotifyGruMarker( MARK_URL_ADMIN_RESPONSE );
+        notifyGruMarkerURl.setDescription( I18nService.getLocalizedString( MESSAGE_DESCRIPTION, I18nService.getDefaultLocale( ) ) );
+        collectionNotifyGruMarkers.add( notifyGruMarkerURl );
         return collectionNotifyGruMarkers;
     }
 
@@ -248,7 +270,7 @@ public class FormsProvider implements IProvider
      */
     public static ReferenceList getQuestionPositions( String strProviderId )
     {
-        return QuestionHome.getQuestionsReferenceListByForm( Integer.parseInt(strProviderId) );
+        return QuestionHome.getQuestionsReferenceListByForm( Integer.parseInt(strProviderId ) );
     }
 
 }
