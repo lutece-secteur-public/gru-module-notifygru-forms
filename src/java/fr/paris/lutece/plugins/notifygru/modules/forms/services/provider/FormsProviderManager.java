@@ -131,7 +131,7 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
     @Override
     public IProvider createProvider( String strProviderId, ResourceHistory resourceHistory, HttpServletRequest request )
     {
-        return new FormsProvider( getId( ), strProviderId, resourceHistory );
+        return new FormsProvider( getId( ), strProviderId, resourceHistory, request );
     }
 
     /**
