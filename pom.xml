@@ -50,8 +50,8 @@
    
     <properties>
    <componentName>Module NotifyGru Forms</componentName>
-        <jiraProjectName>MPRODIR</jiraProjectName>
-        <jiraComponentId>12919</jiraComponentId>
+        <jiraProjectName>MNGRUF-1</jiraProjectName>
+        <jiraComponentId>31669</jiraComponentId>
     </properties>
     
     <scm>
