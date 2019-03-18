@@ -43,12 +43,12 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.service.AbstractProviderManagerWithMapping;
-import fr.paris.lutece.plugins.workflow.modules.notifygru.service.provider.IProvider;
-import fr.paris.lutece.plugins.workflow.modules.notifygru.service.provider.ProviderDescription;
 import fr.paris.lutece.plugins.workflowcore.business.action.Action;
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
 import fr.paris.lutece.plugins.workflowcore.business.workflow.Workflow;
 import fr.paris.lutece.plugins.workflowcore.service.action.ActionService;
+import fr.paris.lutece.plugins.workflowcore.service.provider.IProvider;
+import fr.paris.lutece.plugins.workflowcore.service.provider.ProviderDescription;
 import fr.paris.lutece.plugins.workflowcore.service.task.ITask;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.util.ReferenceList;
