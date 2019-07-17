@@ -52,6 +52,7 @@ import fr.paris.lutece.plugins.workflowcore.service.provider.ProviderDescription
 import fr.paris.lutece.plugins.workflowcore.service.task.ITask;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.util.ReferenceList;
+import org.apache.lucene.store.Directory;
 
 /**
  * <p>

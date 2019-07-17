@@ -138,7 +138,11 @@ public final class NotifyGruFormsService implements INotifyGruFormsService
     private String getFormResponseStringValue( int nIdResponse, FormResponse formResponse )
     {
         return FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( formResponse.getId( ) ).stream( )
-                .filter( response -> response.getQuestion( ).getId( ) == nIdResponse ).findFirst( ).get( ).getEntryResponse( ).get( 0 )
+                .filter( response -> response.getQuestion( ).getId( ) == nIdResponse )
+                .findFirst( )
+                .get( )
+                .getEntryResponse( )
+                .get( 0 )
                 .getToStringValueResponse( );
     }
 }

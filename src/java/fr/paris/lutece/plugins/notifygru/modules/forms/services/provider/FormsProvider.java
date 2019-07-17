@@ -41,19 +41,23 @@ import fr.paris.lutece.plugins.forms.business.Question;
 import fr.paris.lutece.plugins.forms.business.QuestionHome;
 import fr.paris.lutece.plugins.forms.util.FormsConstants;
 import fr.paris.lutece.plugins.forms.web.admin.MultiviewFormResponseDetailsJspBean;
-import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
+import fr.paris.lutece.plugins.genericattributes.business.Field;
+import fr.paris.lutece.plugins.genericattributes.business.Response;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.business.NotifygruMappingManager;
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.business.NotifygruMappingManagerHome;
 import fr.paris.lutece.plugins.notifygru.modules.forms.services.NotifyGruFormsService;
+import fr.paris.lutece.plugins.workflow.service.provider.ProviderManagerUtil;
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
+import fr.paris.lutece.plugins.workflowcore.service.provider.IProvider;
+import fr.paris.lutece.plugins.workflowcore.service.provider.InfoMarker;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPathService;
@@ -222,20 +226,37 @@ public class FormsProvider implements IProvider
         Collection<InfoMarker> result = new ArrayList<>( );
 
         List<FormQuestionResponse> listFormQuestionResponse = _notifyGruFormsService.getListFormQuestionResponse( _formResponse );
+        String responseValue = StringUtils.EMPTY;
+        InfoMarker notifyGruMarker = null;
 
         for ( FormQuestionResponse formQuestionResponse : listFormQuestionResponse )
         {
-            InfoMarker notifyMarker = new InfoMarker( MARK_POSITION + formQuestionResponse.getQuestion( ).getId( ) );
-            notifyMarker.setValue( !CollectionUtils.isEmpty( formQuestionResponse.getEntryResponse( ) ) ? formQuestionResponse.getEntryResponse( ).get( 0 )
-                    .getToStringValueResponse( ) : "" );
-            result.add( notifyMarker );
+            if ( formQuestionResponse.getEntryResponse().size() > 0 )
+            {
+                responseValue = formQuestionResponse.getEntryResponse( ).get( 0 ).getToStringValueResponse( );
+                notifyGruMarker = new InfoMarker( MARK_POSITION + formQuestionResponse.getQuestion( ).getId( ) );
+                notifyGruMarker.setValue( responseValue );
+                result.add( notifyGruMarker );
+            }
+
+		    
+            if ( formQuestionResponse.getEntryResponse().size() > 1  )
+                {
+                for ( Response response : formQuestionResponse.getEntryResponse( ) )
+                {
+                    responseValue = response.getToStringValueResponse( );
+                    notifyGruMarker = new InfoMarker( MARK_POSITION + formQuestionResponse.getQuestion( ).getId( ) + "_" + response.getField().getIdField( ) );
+                    notifyGruMarker.setValue( responseValue );
+                    result.add( notifyGruMarker );
+                }
+			}
         }
-        InfoMarker notifyMarkerUrl = new InfoMarker( MARK_URL_ADMIN_RESPONSE );
+        InfoMarker notifyGruMarkerUrl = new InfoMarker( MARK_URL_ADMIN_RESPONSE );
         UrlItem url = new UrlItem( AppPathService.getBaseUrl( _request ) + MultiviewFormResponseDetailsJspBean.CONTROLLER_JSP_NAME_WITH_PATH );
         url.addParameter( FormsConstants.PARAMETER_TARGET_VIEW, PARAMETER_VIEW_FORM_RESPONSE_DETAILS );
         url.addParameter( PARAMETER_ID_FORM_RESPONSES, _formResponse.getId( ) );
-        notifyMarkerUrl.setValue( url.getUrl( ) );
-        result.add( notifyMarkerUrl );
+        notifyGruMarkerUrl.setValue( url.getUrl( ) );
+        result.add( notifyGruMarkerUrl );
         return result;
     }
 
@@ -248,20 +269,28 @@ public class FormsProvider implements IProvider
      */
     public static Collection<InfoMarker> getProviderMarkerDescriptions( Form form )
     {
-        Collection<InfoMarker> collectionNotifyMarkers = new ArrayList<>( );
+        Collection<InfoMarker> collectionNotifyGruMarkers = new ArrayList<>( );
 
         List<Question> listFormQuestions = QuestionHome.getListQuestionByIdForm( form.getId( ) );
 
         for ( Question formQuestion : listFormQuestions )
         {
-            InfoMarker notifyMarker = new InfoMarker( MARK_POSITION + formQuestion.getId( ) );
-            notifyMarker.setDescription( formQuestion.getTitle( ) );
-            collectionNotifyMarkers.add( notifyMarker );
+            InfoMarker notifyGruMarker = new InfoMarker( MARK_POSITION + formQuestion.getId( ) );
+            notifyGruMarker.setDescription( formQuestion.getTitle( ) );
+            collectionNotifyGruMarkers.add( notifyGruMarker );
+
+            for ( Field field : formQuestion.getEntry().getFields( ) )
+            {
+                notifyGruMarker = new InfoMarker( MARK_POSITION + formQuestion.getId( ) + "_" + field.getIdField( ) );
+                notifyGruMarker.setDescription( formQuestion.getTitle( ) + " / " + field.getTitle( ) );
+                collectionNotifyGruMarkers.add( notifyGruMarker );
+            }
+
         }
-        InfoMarker notifyMarkerURl = new InfoMarker( MARK_URL_ADMIN_RESPONSE );
-        notifyMarkerURl.setDescription( I18nService.getLocalizedString( MESSAGE_DESCRIPTION, I18nService.getDefaultLocale( ) ) );
-        collectionNotifyMarkers.add( notifyMarkerURl );
-        return collectionNotifyMarkers;
+        InfoMarker notifyGruMarkerURl = new InfoMarker( MARK_URL_ADMIN_RESPONSE );
+        notifyGruMarkerURl.setDescription( I18nService.getLocalizedString( MESSAGE_DESCRIPTION, I18nService.getDefaultLocale( ) ) );
+        collectionNotifyGruMarkers.add( notifyGruMarkerURl );
+        return collectionNotifyGruMarkers;
     }
 
     /**
