@@ -41,10 +41,13 @@ import fr.paris.lutece.plugins.forms.business.Question;
 import fr.paris.lutece.plugins.forms.business.QuestionHome;
 import fr.paris.lutece.plugins.forms.util.FormsConstants;
 import fr.paris.lutece.plugins.forms.web.admin.MultiviewFormResponseDetailsJspBean;
-import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
+import fr.paris.lutece.plugins.genericattributes.service.entrytype.EntryTypeServiceManager;
+import fr.paris.lutece.plugins.genericattributes.service.entrytype.IEntryTypeService;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -225,9 +228,11 @@ public class FormsProvider implements IProvider
 
         for ( FormQuestionResponse formQuestionResponse : listFormQuestionResponse )
         {
+        	IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( formQuestionResponse.getQuestion( ).getEntry( ) );
             InfoMarker notifyMarker = new InfoMarker( MARK_POSITION + formQuestionResponse.getQuestion( ).getId( ) );
-            notifyMarker.setValue( !CollectionUtils.isEmpty( formQuestionResponse.getEntryResponse( ) ) ? formQuestionResponse.getEntryResponse( ).get( 0 )
-                    .getToStringValueResponse( ) : "" );
+            notifyMarker.setValue( !CollectionUtils.isEmpty( formQuestionResponse.getEntryResponse( ) ) ? 
+            		entryTypeService.getResponseValueForRecap( formQuestionResponse.getQuestion( ).getEntry( ), null, formQuestionResponse.getEntryResponse( ).get( 0 ), Locale.getDefault( ) ) 
+            		: "" );
             result.add( notifyMarker );
         }
         InfoMarker notifyMarkerUrl = new InfoMarker( MARK_URL_ADMIN_RESPONSE );
