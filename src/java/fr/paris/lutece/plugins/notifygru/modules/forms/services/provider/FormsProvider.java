@@ -42,9 +42,15 @@ import fr.paris.lutece.plugins.forms.business.QuestionHome;
 import fr.paris.lutece.plugins.forms.util.FormsConstants;
 import fr.paris.lutece.plugins.forms.web.admin.MultiviewFormResponseDetailsJspBean;
 import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
+import fr.paris.lutece.plugins.genericattributes.service.entrytype.EntryTypeServiceManager;
+import fr.paris.lutece.plugins.genericattributes.service.entrytype.IEntryTypeService;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -56,6 +62,7 @@ import fr.paris.lutece.plugins.notifygru.modules.forms.services.NotifyGruFormsSe
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.ReferenceList;
@@ -223,13 +230,36 @@ public class FormsProvider implements IProvider
 
         List<FormQuestionResponse> listFormQuestionResponse = _notifyGruFormsService.getListFormQuestionResponse( _formResponse );
 
+        Map<Integer, InfoMarker> markers = new HashMap<>( );
         for ( FormQuestionResponse formQuestionResponse : listFormQuestionResponse )
         {
-            InfoMarker notifyMarker = new InfoMarker( MARK_POSITION + formQuestionResponse.getQuestion( ).getId( ) );
-            notifyMarker.setValue( !CollectionUtils.isEmpty( formQuestionResponse.getEntryResponse( ) ) ? formQuestionResponse.getEntryResponse( ).get( 0 )
-                    .getToStringValueResponse( ) : "" );
-            result.add( notifyMarker );
+            InfoMarker notifyMarker = markers.computeIfAbsent( formQuestionResponse.getQuestion( ).getId( ), ( k ) -> new InfoMarker( MARK_POSITION
+                    + formQuestionResponse.getQuestion( ).getId( ) ) );
+            IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( formQuestionResponse.getQuestion( ).getEntry( ) );
+            String value;
+            if ( CollectionUtils.isEmpty( formQuestionResponse.getEntryResponse( ) ) )
+            {
+                value = "";
+            }
+            else
+            {
+				value = formQuestionResponse.getEntryResponse( ).stream( )
+						.map( response -> entryTypeService.getResponseValueForRecap(
+								formQuestionResponse.getQuestion( ).getEntry( ), _request, response, null ) )
+						.collect( Collectors.joining( ", " ) );
+            }
+            if ( notifyMarker.getValue( ) == null )
+            {
+                notifyMarker.setValue( value );
+            }
+            else
+            {
+                notifyMarker.setValue( notifyMarker.getValue( ) + "<br>" + value );
+            }
+            AppLogService.debug( "Adding infomarker " + notifyMarker.getMarker( ) + "=" + notifyMarker.getValue( ) );
         }
+        result.addAll( markers.values( ) );
+
         InfoMarker notifyMarkerUrl = new InfoMarker( MARK_URL_ADMIN_RESPONSE );
         UrlItem url = new UrlItem( AppPathService.getBaseUrl( _request ) + MultiviewFormResponseDetailsJspBean.CONTROLLER_JSP_NAME_WITH_PATH );
         url.addParameter( FormsConstants.PARAMETER_TARGET_VIEW, PARAMETER_VIEW_FORM_RESPONSE_DETAILS );
