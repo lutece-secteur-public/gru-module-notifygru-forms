@@ -33,11 +33,16 @@
  */
 package fr.paris.lutece.plugins.notifygru.modules.forms.services;
 
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import fr.paris.lutece.plugins.forms.business.FormQuestionResponse;
 import fr.paris.lutece.plugins.forms.business.FormQuestionResponseHome;
 import fr.paris.lutece.plugins.forms.business.FormResponse;
+import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.business.NotifygruMappingManager;
-import java.util.List;
 
 /**
  * NotifyFormsService.
@@ -137,8 +142,14 @@ public final class NotifyGruFormsService implements INotifyGruFormsService
      */
     private String getFormResponseStringValue( int nIdResponse, FormResponse formResponse )
     {
-        return FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( formResponse.getId( ) ).stream( )
-                .filter( response -> response.getQuestion( ).getId( ) == nIdResponse ).findFirst( ).get( ).getEntryResponse( ).get( 0 )
-                .getToStringValueResponse( );
+    	List<Response> responseList = FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( formResponse.getId( ) ).stream( )
+                .filter( response -> response.getQuestion( ).getId( ) == nIdResponse ).findFirst( )
+                .map( FormQuestionResponse::getEntryResponse ).orElse( null );
+    	
+    	if ( CollectionUtils.isNotEmpty( responseList ) )
+    	{
+    		return responseList.get( 0 ).getToStringValueResponse( );
+    	}
+    	return StringUtils.EMPTY;
     }
 }
