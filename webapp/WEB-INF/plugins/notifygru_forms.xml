@@ -2,7 +2,7 @@
     
     <class>fr.paris.lutece.plugins.notifygru.modules.forms.NotifyGruFormsPlugin</class>
     <name>notifygru-forms</name>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
     <documentation/>
     <installation/>
     <changes/>
