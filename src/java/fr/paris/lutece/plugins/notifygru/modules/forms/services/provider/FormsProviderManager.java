@@ -35,6 +35,8 @@ package fr.paris.lutece.plugins.notifygru.modules.forms.services.provider;
 
 import fr.paris.lutece.plugins.forms.business.Form;
 import fr.paris.lutece.plugins.forms.business.FormHome;
+import fr.paris.lutece.plugins.forms.service.provider.GenericFormsProvider;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -120,7 +122,7 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
         ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ),
                 I18nService.getLocalizedString( TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
 
-        providerDescription.setMarkerDescriptions( FormsProvider.getProviderMarkerDescriptions( form ) );
+        providerDescription.setMarkerDescriptions( GenericFormsProvider.getProviderMarkerDescriptions( form ) );
 
         return providerDescription;
     }
