@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -100,8 +100,8 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
 
             if ( ( workflow.getId( ) == form.getIdWorkflow( ) ) )
             {
-                ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ), I18nService.getLocalizedString(
-                        TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
+                ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ),
+                        I18nService.getLocalizedString( TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
                 collectionProviderDescriptions.add( providerDescription );
             }
         }
@@ -117,8 +117,8 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
     {
         Form form = FormHome.findByPrimaryKey( Integer.parseInt( strProviderId ) );
 
-        ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ), I18nService.getLocalizedString( TITLE_I18NKEY,
-                I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
+        ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ),
+                I18nService.getLocalizedString( TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
 
         providerDescription.setMarkerDescriptions( FormsProvider.getProviderMarkerDescriptions( form ) );
 
@@ -145,8 +145,8 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
 
         for ( Form form : listForms )
         {
-            ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ), I18nService.getLocalizedString( TITLE_I18NKEY,
-                    I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
+            ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ),
+                    I18nService.getLocalizedString( TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
             collectionProviderDescriptions.add( providerDescription );
         }
 

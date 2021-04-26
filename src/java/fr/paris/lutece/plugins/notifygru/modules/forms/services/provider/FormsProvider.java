@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,7 +61,7 @@ public class FormsProvider extends GenericFormsProvider
     // PARAMETERS
     public static final String PARAMETER_VIEW_FORM_RESPONSE_DETAILS = "view_form_response_details";
     public static final String PARAMETER_ID_FORM_RESPONSES = "id_form_response";
-    
+
     // SERVICES
     private static INotifyGruFormsService _notifyGruFormsService = SpringContextService.getBean( NotifyGruFormsService.BEAN_SERVICE );
 
@@ -95,8 +95,8 @@ public class FormsProvider extends GenericFormsProvider
 
         if ( _mapping == null )
         {
-            throw new AppException( "No mapping found for the form " + _formResponse.getFormId( )
-                    + ". Please check the configuration of the module-forms-mappingmanager." );
+            throw new AppException(
+                    "No mapping found for the form " + _formResponse.getFormId( ) + ". Please check the configuration of the module-forms-mappingmanager." );
         }
 
         _strCustomerEmail = _notifyGruFormsService.getEmail( _mapping, _formResponse );
@@ -106,7 +106,6 @@ public class FormsProvider extends GenericFormsProvider
         _strDemandReference = _notifyGruFormsService.getDemandReference( _mapping, _formResponse );
         _strDemandTypeId = String.valueOf( _notifyGruFormsService.getIdDemandType( _mapping ) );
     }
-
 
     /**
      * {@inheritDoc}

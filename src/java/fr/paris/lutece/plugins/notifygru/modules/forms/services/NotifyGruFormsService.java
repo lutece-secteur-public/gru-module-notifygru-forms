@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -142,14 +142,14 @@ public final class NotifyGruFormsService implements INotifyGruFormsService
      */
     private String getFormResponseStringValue( int nIdResponse, FormResponse formResponse )
     {
-    	List<Response> responseList = FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( formResponse.getId( ) ).stream( )
-                .filter( response -> response.getQuestion( ).getId( ) == nIdResponse ).findFirst( )
-                .map( FormQuestionResponse::getEntryResponse ).orElse( null );
-    	
-    	if ( CollectionUtils.isNotEmpty( responseList ) )
-    	{
-    		return responseList.get( 0 ).getToStringValueResponse( );
-    	}
-    	return StringUtils.EMPTY;
+        List<Response> responseList = FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( formResponse.getId( ) ).stream( )
+                .filter( response -> response.getQuestion( ).getId( ) == nIdResponse ).findFirst( ).map( FormQuestionResponse::getEntryResponse )
+                .orElse( null );
+
+        if ( CollectionUtils.isNotEmpty( responseList ) )
+        {
+            return responseList.get( 0 ).getToStringValueResponse( );
+        }
+        return StringUtils.EMPTY;
     }
 }
