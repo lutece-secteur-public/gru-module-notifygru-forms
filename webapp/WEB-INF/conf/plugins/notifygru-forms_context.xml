@@ -16,5 +16,4 @@
         <constructor-arg type="java.lang.String" value="notifygru-forms.ProviderService" />
     </bean>
 
-    <bean id="notifygru-forms.notifygruFormsService" class="fr.paris.lutece.plugins.notifygru.modules.forms.services.NotifyGruFormsService" />
 </beans>

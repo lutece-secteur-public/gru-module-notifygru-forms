@@ -35,21 +35,23 @@ package fr.paris.lutece.plugins.notifygru.modules.forms.services.provider;
 
 import fr.paris.lutece.plugins.forms.business.Form;
 import fr.paris.lutece.plugins.forms.business.FormHome;
+import fr.paris.lutece.plugins.forms.business.Question;
+import fr.paris.lutece.plugins.forms.business.QuestionHome;
 import fr.paris.lutece.plugins.forms.service.provider.GenericFormsProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.service.AbstractProviderManagerWithMapping;
-import fr.paris.lutece.plugins.workflowcore.business.action.Action;
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
-import fr.paris.lutece.plugins.workflowcore.business.workflow.Workflow;
 import fr.paris.lutece.plugins.workflowcore.service.action.ActionService;
 import fr.paris.lutece.plugins.workflowcore.service.provider.IProvider;
+import fr.paris.lutece.plugins.workflowcore.service.provider.InfoMarker;
 import fr.paris.lutece.plugins.workflowcore.service.provider.ProviderDescription;
 import fr.paris.lutece.plugins.workflowcore.service.task.ITask;
 import fr.paris.lutece.portal.service.i18n.I18nService;
@@ -66,9 +68,6 @@ import fr.paris.lutece.util.ReferenceList;
  */
 public class FormsProviderManager extends AbstractProviderManagerWithMapping
 {
-    // Messages
-    private static final String TITLE_I18NKEY = "module.notifygru.forms.module.providerdirectory";
-
     @Inject
     private ActionService _actionService;
 
@@ -93,37 +92,53 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
     public Collection<ProviderDescription> getAllProviderDescriptions( ITask task )
     {
         Collection<ProviderDescription> collectionProviderDescriptions = new ArrayList<>( );
-        List<Form> listForms = FormHome.getFormList( );
 
-        for ( Form form : listForms )
+        int nIdWorkflow = _actionService.findByPrimaryKey( task.getAction( ).getId( ) ).getWorkflow( ).getId( );
+        
+        for ( Form form : FormHome.getFormList( ) )
         {
-            Action action = _actionService.findByPrimaryKey( task.getAction( ).getId( ) );
-            Workflow workflow = action.getWorkflow( );
-
-            if ( ( workflow.getId( ) == form.getIdWorkflow( ) ) )
+            if ( ( nIdWorkflow == form.getIdWorkflow( ) ) )
             {
                 ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ),
-                        I18nService.getLocalizedString( TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
+                        I18nService.getLocalizedString( Constants.TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
                 collectionProviderDescriptions.add( providerDescription );
             }
         }
-
+        collectionProviderDescriptions.add( new ProviderDescription( Constants.ALL_FORMS + nIdWorkflow ,
+                I18nService.getLocalizedString( Constants.TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + Constants.DESCRIPTION_ALLFORMS_SUFFIX ) );
+        
         return collectionProviderDescriptions;
     }
-
+ 
     /**
      * {@inheritDoc}
      */
     @Override
     public ProviderDescription getProviderDescription( String strProviderId )
     {
-        Form form = FormHome.findByPrimaryKey( Integer.parseInt( strProviderId ) );
+        Collection<InfoMarker> collectionNotifyMarkers = new ArrayList<>( );
+        ProviderDescription providerDescription;
+        
+    	if(strProviderId.startsWith( Constants.ALL_FORMS ) ) 
+    	{
+    		
+    		int nIdWorkflow= Integer.parseInt( strProviderId.substring(1));
+    		   providerDescription = new ProviderDescription( strProviderId,
+                      I18nService.getLocalizedString( Constants.TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + Constants.DESCRIPTION_ALLFORMS_SUFFIX );
+    		 collectionNotifyMarkers.addAll(getProviderMarkerDescriptions( FormHome.getFormList( ).stream().filter(form -> form.getIdWorkflow() == nIdWorkflow).collect(Collectors.toList()) ));
+    		
+    	}else {
+    		
+    		Form form = FormHome.findByPrimaryKey( Integer.parseInt( strProviderId ) );
 
-        ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ),
-                I18nService.getLocalizedString( TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
+             providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ),
+                    I18nService.getLocalizedString( Constants.TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
 
-        providerDescription.setMarkerDescriptions( GenericFormsProvider.getProviderMarkerDescriptions( form ) );
-
+             collectionNotifyMarkers= GenericFormsProvider.getProviderMarkerDescriptions( form );
+        
+    	}
+    	
+    	providerDescription.setMarkerDescriptions( collectionNotifyMarkers );
         return providerDescription;
     }
 
@@ -148,7 +163,7 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
         for ( Form form : listForms )
         {
             ProviderDescription providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ),
-                    I18nService.getLocalizedString( TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
+                    I18nService.getLocalizedString( Constants.TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
             collectionProviderDescriptions.add( providerDescription );
         }
 
@@ -161,7 +176,40 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
     @Override
     public ReferenceList getMappingPropertiesForProvider( String strProviderId )
     {
-        return FormsProvider.getQuestionPositions( strProviderId );
+         return QuestionHome.getQuestionsReferenceListByForm( Integer.parseInt( strProviderId ) );
     }
+    
+    /**
+     * Get the collection of InfoMarker, for the given form
+     * 
+     * @param listForm
+     *            The form list
+     * @return the collection of the notifyMarkers
+     */
+    private Collection<InfoMarker> getProviderMarkerDescriptions( List<Form> listForm )
+    {
+        Collection<InfoMarker> collectionNotifyMarkers = new ArrayList<>( );
+        List<Question> questionList = new ArrayList<>( );
+        
+        for(Form form: listForm) {
+        	
+        	questionList.addAll( QuestionHome.getListQuestionByIdForm( form.getId( ) ));
+        }
+
+        for ( Question formQuestion : questionList )
+        {
+        	if( collectionNotifyMarkers.stream().noneMatch( p -> p.getMarker( ).equals(formQuestion.getCode( )))) {
+        		
+        		InfoMarker notifyMarker = new InfoMarker( formQuestion.getCode( ));
+        		notifyMarker.setDescription( formQuestion.getColumnTitle( ) );
+        		collectionNotifyMarkers.add( notifyMarker );
+        	}
+        }
+        InfoMarker notifyMarkerURl = new InfoMarker( Constants.MARK_URL_ADMIN_RESPONSE );
+        notifyMarkerURl.setDescription( I18nService.getLocalizedString( Constants.MESSAGE_DESCRIPTION, I18nService.getDefaultLocale( ) ) );
+        collectionNotifyMarkers.add( notifyMarkerURl );
+        return collectionNotifyMarkers;
+    }
+    
 
 }
