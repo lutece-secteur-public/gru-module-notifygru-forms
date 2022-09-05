@@ -90,6 +90,21 @@ public class FormsProvider implements IProvider
     private final String _strProvideDemandeId;
     private final String _strBaseUrl;
     private final int _nIdFormResponse;
+    private final HttpServletRequest _request;
+    
+    // PROPERTIES
+    private static final String MARK_URL_FO_RESPONSE = "url_fo_forms_response_detail";
+    private static final String MARK_CREATION_DATE = "creation_date";
+    private static final String MARK_UPDATE_DATE = "update_date";
+    private static final String MARK_STATUS = "status";
+    private static final String MARK_STATUS_UPDATE_DATE = "update_date_status";
+    
+    // PARAMETERS
+    public static final String PARAMETER_VIEW_FORM_RESPONSE_DETAILS = "view_form_response_details";
+    public static final String PARAMETER_VIEW_FORM_RESPONSE_DETAILS_FO = "formResponseView";
+    public static final String PARAMETER_ID_FORM_RESPONSES = "id_form_response";
+    public static final String PARAMETER_ID_FORM_RESPONSES_FO = "id_response";
+    public static final String PARAMETER_PAGE_FORM_RESPONSE = "formsResponse";
 
 
     /**
@@ -129,6 +144,7 @@ public class FormsProvider implements IProvider
         _strDemandReference =  getFormResponseStringValue(formQuestionresponseList, mapping.getDemandReference( ), formResponse );
         _strDemandTypeId = String.valueOf( mapping.getDemandeTypeId( ) );
         _strProvideDemandeId= String.valueOf( formResponse.getId( ) );
+        _request = request;
     }
 
     /**
@@ -239,6 +255,8 @@ public class FormsProvider implements IProvider
 	        }
     	}
         result.addAll( markers.values( ) );
+        
+        FormResponse formResponse = FormResponseHome.findByPrimaryKey( _nIdFormResponse );
 
         InfoMarker notifyMarkerUrl = new InfoMarker( Constants.MARK_URL_ADMIN_RESPONSE );
         UrlItem url = new UrlItem( _strBaseUrl + MultiviewFormResponseDetailsJspBean.CONTROLLER_JSP_NAME_WITH_PATH );
@@ -246,6 +264,31 @@ public class FormsProvider implements IProvider
         url.addParameter( Constants.PARAMETER_ID_FORM_RESPONSES, _nIdFormResponse );
         notifyMarkerUrl.setValue( url.getUrl( ) );
         result.add( notifyMarkerUrl );
+        
+        InfoMarker notifyMarkerFOUrl = new InfoMarker( MARK_URL_FO_RESPONSE );
+        UrlItem urlFO = new UrlItem( AppPathService.getProdUrl( _request ) + AppPathService.getPortalUrl( ) );
+        urlFO.addParameter( FormsConstants.PARAMETER_PAGE, PARAMETER_PAGE_FORM_RESPONSE );
+        urlFO.addParameter( FormsConstants.PARAMETER_TARGET_VIEW, PARAMETER_VIEW_FORM_RESPONSE_DETAILS_FO );
+        urlFO.addParameter( PARAMETER_ID_FORM_RESPONSES_FO, _nIdFormResponse );
+        notifyMarkerFOUrl.setValue( urlFO.getUrl( ) );
+        result.add( notifyMarkerFOUrl );
+        
+        InfoMarker creationDateMarker = new InfoMarker( MARK_CREATION_DATE );
+        creationDateMarker.setValue( formResponse.getCreation( ).toString( ) );
+        result.add( creationDateMarker );
+        
+        InfoMarker updateDateMarker = new InfoMarker( MARK_UPDATE_DATE );
+        updateDateMarker.setValue( formResponse.getCreation( ).toString( ) );
+        result.add( updateDateMarker );
+        
+        InfoMarker statusMarker = new InfoMarker( MARK_STATUS );
+        statusMarker.setValue( String.valueOf( formResponse.isPublished( ) ) );
+        result.add( statusMarker );
+        
+        InfoMarker updateStatusDateMarker = new InfoMarker( MARK_STATUS_UPDATE_DATE );
+        updateStatusDateMarker.setValue( formResponse.getUpdateStatus( ).toString( ) );
+        result.add( updateStatusDateMarker );
+        
         return result;
     }
     /**
