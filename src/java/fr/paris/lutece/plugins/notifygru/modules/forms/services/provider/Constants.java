@@ -19,7 +19,16 @@ public class Constants {
     public static final String TITLE_I18NKEY = "module.notifygru.forms.module.providerdirectory";
     public static final String DESCRIPTION_ALLFORMS_SUFFIX = "All Forms";
     public static final String MESSAGE_DESCRIPTION = "forms.marker.provider.url.detail.reponse.description";
-	
+
+    public static final String MARK_CREATION_DATE = "creation_date";
+    public static final String MESSAGE_CREATION_DATE = "forms.marker.provider.url.detail.reponse.creation_date";
+    public static final String MARK_CREATION_TIME = "creation_time";
+    public static final String MESSAGE_CREATION_TIME = "forms.marker.provider.url.detail.reponse.creation_time";
+
+    public static final String MARK_UPDATE_TIME = "update_time";
+    public static final String MESSAGE_UPDATE_TIME = "forms.marker.provider.url.detail.reponse.update_time";
+    public static final String MARK_UPDATE_DATE = "update_date";
+    public static final String MESSAGE_UPDATE_DATE = "forms.marker.provider.url.detail.reponse.update_date";
 	private Constants() {}
 
 }
