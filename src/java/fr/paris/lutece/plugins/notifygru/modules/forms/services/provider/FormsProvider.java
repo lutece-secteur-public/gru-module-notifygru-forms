@@ -33,11 +33,9 @@
  */
 package fr.paris.lutece.plugins.notifygru.modules.forms.services.provider;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -98,6 +96,9 @@ public class FormsProvider implements IProvider
     private static final String MARK_UPDATE_DATE = "update_date";
     private static final String MARK_STATUS = "status";
     private static final String MARK_STATUS_UPDATE_DATE = "update_date_status";
+    private static final String MARK_CREATION_TIME = "creation_time";
+    private static final String MARK_UPDATE_TIME = "update_time";
+    private static final String MARK_FORM_TITLE = "form_title";
     
     // PARAMETERS
     public static final String PARAMETER_VIEW_FORM_RESPONSE_DETAILS = "view_form_response_details";
@@ -257,6 +258,7 @@ public class FormsProvider implements IProvider
         result.addAll( markers.values( ) );
         
         FormResponse formResponse = FormResponseHome.findByPrimaryKey( _nIdFormResponse );
+        Form form = FormHome.findByPrimaryKey(formResponse.getFormId());
 
         InfoMarker notifyMarkerUrl = new InfoMarker( Constants.MARK_URL_ADMIN_RESPONSE );
         UrlItem url = new UrlItem( _strBaseUrl + MultiviewFormResponseDetailsJspBean.CONTROLLER_JSP_NAME_WITH_PATH );
@@ -272,13 +274,18 @@ public class FormsProvider implements IProvider
         urlFO.addParameter( PARAMETER_ID_FORM_RESPONSES_FO, _nIdFormResponse );
         notifyMarkerFOUrl.setValue( urlFO.getUrl( ) );
         result.add( notifyMarkerFOUrl );
-        
+
+        Locale locale =_request.getLocale();
+        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG, locale);
+
+        String dateCreateMark =  dateFormat.format(formResponse.getCreation( ));
         InfoMarker creationDateMarker = new InfoMarker( MARK_CREATION_DATE );
-        creationDateMarker.setValue( formResponse.getCreation( ).toString( ) );
+        creationDateMarker.setValue( dateCreateMark.toString( ) );
         result.add( creationDateMarker );
-        
+
+        String dateUpdateMark =  dateFormat.format(formResponse.getUpdate());
         InfoMarker updateDateMarker = new InfoMarker( MARK_UPDATE_DATE );
-        updateDateMarker.setValue( formResponse.getCreation( ).toString( ) );
+        updateDateMarker.setValue( dateUpdateMark.toString( ) );
         result.add( updateDateMarker );
         
         InfoMarker statusMarker = new InfoMarker( MARK_STATUS );
@@ -288,6 +295,21 @@ public class FormsProvider implements IProvider
         InfoMarker updateStatusDateMarker = new InfoMarker( MARK_STATUS_UPDATE_DATE );
         updateStatusDateMarker.setValue( formResponse.getUpdateStatus( ).toString( ) );
         result.add( updateStatusDateMarker );
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        String creationtime =  timeFormat.format(formResponse.getCreation( ));
+        InfoMarker creationTimeMarker = new InfoMarker( MARK_CREATION_TIME );
+        creationTimeMarker.setValue(creationtime);
+        result.add( creationTimeMarker );
+
+        String updatetime =  timeFormat.format(formResponse.getUpdate());
+        InfoMarker updateTimeMarker = new InfoMarker( MARK_UPDATE_TIME );
+        updateTimeMarker.setValue(updatetime);
+        result.add( updateTimeMarker );
+
+        InfoMarker titleMarker = new InfoMarker( MARK_FORM_TITLE );
+        titleMarker.setValue( form.getTitle() );
+        result.add( titleMarker );
         
         return result;
     }

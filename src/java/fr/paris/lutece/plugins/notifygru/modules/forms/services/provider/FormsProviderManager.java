@@ -207,7 +207,19 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
         }
         InfoMarker notifyMarkerURl = new InfoMarker( Constants.MARK_URL_ADMIN_RESPONSE );
         notifyMarkerURl.setDescription( I18nService.getLocalizedString( Constants.MESSAGE_DESCRIPTION, I18nService.getDefaultLocale( ) ) );
+        InfoMarker creationDateMarker = new InfoMarker( Constants.MARK_CREATION_DATE );
+        creationDateMarker.setDescription( I18nService.getLocalizedString( Constants.MESSAGE_CREATION_DATE, I18nService.getDefaultLocale( ) ) );
+        InfoMarker creationTimeMarker = new InfoMarker( Constants.MARK_CREATION_TIME );
+        creationTimeMarker.setDescription( I18nService.getLocalizedString( Constants.MESSAGE_CREATION_TIME, I18nService.getDefaultLocale( ) ) );
+        InfoMarker updateDateMarker = new InfoMarker( Constants.MARK_UPDATE_DATE );
+        updateDateMarker.setDescription( I18nService.getLocalizedString( Constants.MESSAGE_UPDATE_DATE, I18nService.getDefaultLocale( ) ) );
+        InfoMarker updateTimeMarker = new InfoMarker( Constants.MARK_UPDATE_TIME );
+        updateTimeMarker.setDescription( I18nService.getLocalizedString( Constants.MESSAGE_UPDATE_TIME, I18nService.getDefaultLocale( ) ) );
         collectionNotifyMarkers.add( notifyMarkerURl );
+        collectionNotifyMarkers.add( creationDateMarker );
+        collectionNotifyMarkers.add( creationTimeMarker );
+        collectionNotifyMarkers.add( updateDateMarker );
+        collectionNotifyMarkers.add( updateTimeMarker );
         return collectionNotifyMarkers;
     }
     
