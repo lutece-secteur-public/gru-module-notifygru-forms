@@ -98,6 +98,7 @@ public class FormsProvider implements IProvider
     private static final String MARK_UPDATE_DATE = "update_date";
     private static final String MARK_STATUS = "status";
     private static final String MARK_STATUS_UPDATE_DATE = "update_date_status";
+    private static final String MARK_URL_FO_FILES_LINK = "url_fo_forms_files_link";
     
     // PARAMETERS
     public static final String PARAMETER_VIEW_FORM_RESPONSE_DETAILS = "view_form_response_details";
@@ -105,6 +106,7 @@ public class FormsProvider implements IProvider
     public static final String PARAMETER_ID_FORM_RESPONSES = "id_form_response";
     public static final String PARAMETER_ID_FORM_RESPONSES_FO = "id_response";
     public static final String PARAMETER_PAGE_FORM_RESPONSE = "formsResponse";
+    private static final String PARAMETER_VIEW_FORM_FILES_LINK_FO = "formFileView";
 
 
     /**
@@ -272,6 +274,14 @@ public class FormsProvider implements IProvider
         urlFO.addParameter( PARAMETER_ID_FORM_RESPONSES_FO, _nIdFormResponse );
         notifyMarkerFOUrl.setValue( urlFO.getUrl( ) );
         result.add( notifyMarkerFOUrl );
+
+        InfoMarker notifyMarkerFOFileUrl = new InfoMarker( MARK_URL_FO_FILES_LINK );
+        UrlItem urlFilesLinkFo = new UrlItem( AppPathService.getProdUrl( _request ) + AppPathService.getPortalUrl( ) );
+        urlFilesLinkFo.addParameter( FormsConstants.PARAMETER_PAGE, PARAMETER_PAGE_FORM_RESPONSE );
+        urlFilesLinkFo.addParameter( FormsConstants.PARAMETER_TARGET_VIEW, PARAMETER_VIEW_FORM_FILES_LINK_FO );
+        urlFilesLinkFo.addParameter( PARAMETER_ID_FORM_RESPONSES_FO, _nIdFormResponse );
+        notifyMarkerFOFileUrl.setValue( urlFilesLinkFo.getUrl( ) );
+        result.add( notifyMarkerFOFileUrl );
         
         InfoMarker creationDateMarker = new InfoMarker( MARK_CREATION_DATE );
         creationDateMarker.setValue( formResponse.getCreation( ).toString( ) );
