@@ -33,13 +33,14 @@
  */
 package fr.paris.lutece.plugins.notifygru.modules.forms.services.provider;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import fr.paris.lutece.plugins.forms.business.FormHome;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -275,17 +276,14 @@ public class FormsProvider implements IProvider
         notifyMarkerFOUrl.setValue( urlFO.getUrl( ) );
         result.add( notifyMarkerFOUrl );
 
-        Locale locale =_request.getLocale();
-        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG, locale);
-
-        String dateCreateMark =  dateFormat.format(formResponse.getCreation( ));
+        LocalDate creationDateOnly = formResponse.getCreation( ).toLocalDateTime().toLocalDate();
         InfoMarker creationDateMarker = new InfoMarker( MARK_CREATION_DATE );
-        creationDateMarker.setValue( dateCreateMark.toString( ) );
+        creationDateMarker.setValue( creationDateOnly.toString() );
         result.add( creationDateMarker );
 
-        String dateUpdateMark =  dateFormat.format(formResponse.getUpdate());
+        LocalDate updateDateOnly = formResponse.getUpdate().toLocalDateTime().toLocalDate();
         InfoMarker updateDateMarker = new InfoMarker( MARK_UPDATE_DATE );
-        updateDateMarker.setValue( dateUpdateMark.toString( ) );
+        updateDateMarker.setValue( updateDateOnly.toString());
         result.add( updateDateMarker );
         
         InfoMarker statusMarker = new InfoMarker( MARK_STATUS );
@@ -296,15 +294,14 @@ public class FormsProvider implements IProvider
         updateStatusDateMarker.setValue( formResponse.getUpdateStatus( ).toString( ) );
         result.add( updateStatusDateMarker );
 
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-        String creationtime =  timeFormat.format(formResponse.getCreation( ));
+        LocalTime creationTimeOnly = formResponse.getCreation( ).toLocalDateTime().toLocalTime();
         InfoMarker creationTimeMarker = new InfoMarker( MARK_CREATION_TIME );
-        creationTimeMarker.setValue(creationtime);
+        creationTimeMarker.setValue(creationTimeOnly.toString());
         result.add( creationTimeMarker );
 
-        String updatetime =  timeFormat.format(formResponse.getUpdate());
+        LocalTime updateTimeOnly = formResponse.getUpdate().toLocalDateTime().toLocalTime();
         InfoMarker updateTimeMarker = new InfoMarker( MARK_UPDATE_TIME );
-        updateTimeMarker.setValue(updatetime);
+        updateTimeMarker.setValue(updateTimeOnly.toString());
         result.add( updateTimeMarker );
 
         InfoMarker titleMarker = new InfoMarker( MARK_FORM_TITLE );
