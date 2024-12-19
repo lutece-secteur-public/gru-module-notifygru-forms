@@ -33,14 +33,19 @@
  */
 package fr.paris.lutece.plugins.notifygru.modules.forms.services.provider;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import fr.paris.lutece.plugins.forms.business.FormHome;
+import fr.paris.lutece.plugins.forms.service.entrytype.EntryTypeFile;
+import fr.paris.lutece.portal.business.file.File;
+import fr.paris.lutece.portal.business.file.FileHome;
+import fr.paris.lutece.portal.service.file.FileServiceException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -77,7 +82,7 @@ import fr.paris.lutece.util.url.UrlItem;
  */
 public class FormsProvider implements IProvider
 {
-  
+
     // FIELDS
     private final String _strCustomerEmail;
     private final String _strConnectionId;
@@ -90,28 +95,27 @@ public class FormsProvider implements IProvider
     private final String _strBaseUrl;
     private final int _nIdFormResponse;
     private final HttpServletRequest _request;
-    
+
     // PROPERTIES
     private static final String MARK_URL_FO_RESPONSE = "url_fo_forms_response_detail";
     private static final String MARK_CREATION_DATE = "creation_date";
     private static final String MARK_UPDATE_DATE = "update_date";
     private static final String MARK_STATUS = "status";
     private static final String MARK_STATUS_UPDATE_DATE = "update_date_status";
-    private static final String MARK_CREATION_TIME = "creation_time";
-    private static final String MARK_UPDATE_TIME = "update_time";
-    private static final String MARK_FORM_TITLE = "form_title";
-    
+    private static final String MARK_URL_FO_FILES_LINK = "url_fo_forms_files_link";
+
     // PARAMETERS
     public static final String PARAMETER_VIEW_FORM_RESPONSE_DETAILS = "view_form_response_details";
     public static final String PARAMETER_VIEW_FORM_RESPONSE_DETAILS_FO = "formResponseView";
     public static final String PARAMETER_ID_FORM_RESPONSES = "id_form_response";
     public static final String PARAMETER_ID_FORM_RESPONSES_FO = "id_response";
     public static final String PARAMETER_PAGE_FORM_RESPONSE = "formsResponse";
+    private static final String PARAMETER_VIEW_FORM_FILES_LINK_FO = "formFileView";
 
 
     /**
      * Constructor
-     * 
+     *
      * @param strProviderManagerId
      *            the provider manager id. Used to retrieve the mapping.
      * @param strProviderId
@@ -123,7 +127,7 @@ public class FormsProvider implements IProvider
      */
     public FormsProvider( String strProviderManagerId, String strProviderId, ResourceHistory resourceHistory, HttpServletRequest request )
     {
-    	  // Get the form response from the resourceHistory
+        // Get the form response from the resourceHistory
         FormResponse formResponse = FormResponseHome.findByPrimaryKey( resourceHistory.getIdResource( ) );
         _nIdFormResponse= formResponse.getId( );
         _strBaseUrl= AppPathService.getBaseUrl( request );
@@ -140,8 +144,8 @@ public class FormsProvider implements IProvider
         List<FormQuestionResponse> formQuestionresponseList = FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( resourceHistory.getIdResource( )  );
 
         _strCustomerEmail = getFormResponseStringValue(formQuestionresponseList, mapping.getEmail( ), formResponse );
-        _strConnectionId =  getFormResponseStringValue( formQuestionresponseList, mapping.getConnectionId( ), formResponse );        
-        _strCustomerId = getFormResponseStringValue( formQuestionresponseList, mapping.getCustomerId( ), formResponse );      
+        _strConnectionId =  getFormResponseStringValue( formQuestionresponseList, mapping.getConnectionId( ), formResponse );
+        _strCustomerId = getFormResponseStringValue( formQuestionresponseList, mapping.getCustomerId( ), formResponse );
         _strCustomerPhoneNumber = getFormResponseStringValue( formQuestionresponseList, mapping.getMobilePhoneNumber( ), formResponse );
         _strDemandReference =  getFormResponseStringValue(formQuestionresponseList, mapping.getDemandReference( ), formResponse );
         _strDemandTypeId = String.valueOf( mapping.getDemandeTypeId( ) );
@@ -153,10 +157,10 @@ public class FormsProvider implements IProvider
      * {@inheritDoc}
      */
     @Override
-	public String provideDemandId() {
-		
-		return _strProvideDemandeId;
-	}
+    public String provideDemandId() {
+
+        return _strProvideDemandeId;
+    }
     /**
      * {@inheritDoc}
      */
@@ -227,7 +231,7 @@ public class FormsProvider implements IProvider
     public String provideCustomerMobilePhone( )
     {
         return _strCustomerPhoneNumber;
-    }    
+    }
     /**
      * {@inheritDoc}
      */
@@ -239,27 +243,26 @@ public class FormsProvider implements IProvider
         List<FormQuestionResponse> listFormQuestionResponse = FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( _nIdFormResponse );
 
         Map<Integer, InfoMarker> markers = new HashMap<>( );
-        if(_strProviderId.startsWith( Constants.ALL_FORMS ) ) 
-    	{
-	        for ( FormQuestionResponse formQuestionResponse : listFormQuestionResponse )
-	        {
-	            InfoMarker notifyMarker = markers.computeIfAbsent( formQuestionResponse.getQuestion( ).getId( ),
-	                     k  -> new InfoMarker( formQuestionResponse.getQuestion( ).getCode() ) );
-	            setValue(  notifyMarker, getValue( formQuestionResponse ) );
-	           
-	        }
-    	}else {
-    		for ( FormQuestionResponse formQuestionResponse : listFormQuestionResponse )
-	        {
-	            InfoMarker notifyMarker = markers.computeIfAbsent( formQuestionResponse.getQuestion( ).getId( ),
-	                     k  -> new InfoMarker( Constants.MARK_POSITION + formQuestionResponse.getQuestion( ).getId( ) ) );
-	            setValue(  notifyMarker, getValue( formQuestionResponse ) );
-	        }
-    	}
+        if(_strProviderId.startsWith( Constants.ALL_FORMS ) )
+        {
+            for ( FormQuestionResponse formQuestionResponse : listFormQuestionResponse )
+            {
+                InfoMarker notifyMarker = markers.computeIfAbsent( formQuestionResponse.getQuestion( ).getId( ),
+                        k  -> new InfoMarker( formQuestionResponse.getQuestion( ).getCode() ) );
+                setValue(  notifyMarker, getValue( formQuestionResponse ) );
+
+            }
+        }else {
+            for ( FormQuestionResponse formQuestionResponse : listFormQuestionResponse )
+            {
+                InfoMarker notifyMarker = markers.computeIfAbsent( formQuestionResponse.getQuestion( ).getId( ),
+                        k  -> new InfoMarker( Constants.MARK_POSITION + formQuestionResponse.getQuestion( ).getId( ) ) );
+                setValue(  notifyMarker, getValue( formQuestionResponse ) );
+            }
+        }
         result.addAll( markers.values( ) );
-        
+
         FormResponse formResponse = FormResponseHome.findByPrimaryKey( _nIdFormResponse );
-        Form form = FormHome.findByPrimaryKey(formResponse.getFormId());
 
         InfoMarker notifyMarkerUrl = new InfoMarker( Constants.MARK_URL_ADMIN_RESPONSE );
         UrlItem url = new UrlItem( _strBaseUrl + MultiviewFormResponseDetailsJspBean.CONTROLLER_JSP_NAME_WITH_PATH );
@@ -267,7 +270,7 @@ public class FormsProvider implements IProvider
         url.addParameter( Constants.PARAMETER_ID_FORM_RESPONSES, _nIdFormResponse );
         notifyMarkerUrl.setValue( url.getUrl( ) );
         result.add( notifyMarkerUrl );
-        
+
         InfoMarker notifyMarkerFOUrl = new InfoMarker( MARK_URL_FO_RESPONSE );
         UrlItem urlFO = new UrlItem( AppPathService.getProdUrl( _request ) + AppPathService.getPortalUrl( ) );
         urlFO.addParameter( FormsConstants.PARAMETER_PAGE, PARAMETER_PAGE_FORM_RESPONSE );
@@ -276,38 +279,30 @@ public class FormsProvider implements IProvider
         notifyMarkerFOUrl.setValue( urlFO.getUrl( ) );
         result.add( notifyMarkerFOUrl );
 
-        LocalDate creationDateOnly = formResponse.getCreation( ).toLocalDateTime().toLocalDate();
+        InfoMarker notifyMarkerFOFileUrl = new InfoMarker( MARK_URL_FO_FILES_LINK );
+        UrlItem urlFilesLinkFo = new UrlItem( AppPathService.getProdUrl( _request ) + AppPathService.getPortalUrl( ) );
+        urlFilesLinkFo.addParameter( FormsConstants.PARAMETER_PAGE, PARAMETER_PAGE_FORM_RESPONSE );
+        urlFilesLinkFo.addParameter( FormsConstants.PARAMETER_TARGET_VIEW, PARAMETER_VIEW_FORM_FILES_LINK_FO );
+        urlFilesLinkFo.addParameter( PARAMETER_ID_FORM_RESPONSES_FO, _nIdFormResponse );
+        notifyMarkerFOFileUrl.setValue( urlFilesLinkFo.getUrl( ) );
+        result.add( notifyMarkerFOFileUrl );
+
         InfoMarker creationDateMarker = new InfoMarker( MARK_CREATION_DATE );
-        creationDateMarker.setValue( creationDateOnly.toString() );
+        creationDateMarker.setValue( formResponse.getCreation( ).toString( ) );
         result.add( creationDateMarker );
 
-        LocalDate updateDateOnly = formResponse.getUpdate().toLocalDateTime().toLocalDate();
         InfoMarker updateDateMarker = new InfoMarker( MARK_UPDATE_DATE );
-        updateDateMarker.setValue( updateDateOnly.toString());
+        updateDateMarker.setValue( formResponse.getCreation( ).toString( ) );
         result.add( updateDateMarker );
-        
+
         InfoMarker statusMarker = new InfoMarker( MARK_STATUS );
         statusMarker.setValue( String.valueOf( formResponse.isPublished( ) ) );
         result.add( statusMarker );
-        
+
         InfoMarker updateStatusDateMarker = new InfoMarker( MARK_STATUS_UPDATE_DATE );
         updateStatusDateMarker.setValue( formResponse.getUpdateStatus( ).toString( ) );
         result.add( updateStatusDateMarker );
 
-        LocalTime creationTimeOnly = formResponse.getCreation( ).toLocalDateTime().toLocalTime();
-        InfoMarker creationTimeMarker = new InfoMarker( MARK_CREATION_TIME );
-        creationTimeMarker.setValue(creationTimeOnly.toString());
-        result.add( creationTimeMarker );
-
-        LocalTime updateTimeOnly = formResponse.getUpdate().toLocalDateTime().toLocalTime();
-        InfoMarker updateTimeMarker = new InfoMarker( MARK_UPDATE_TIME );
-        updateTimeMarker.setValue(updateTimeOnly.toString());
-        result.add( updateTimeMarker );
-
-        InfoMarker titleMarker = new InfoMarker( MARK_FORM_TITLE );
-        titleMarker.setValue( form.getTitle() );
-        result.add( titleMarker );
-        
         return result;
     }
     /**
@@ -316,32 +311,58 @@ public class FormsProvider implements IProvider
      * @return value
      */
     private String getValue(FormQuestionResponse formQuestionResponse) {
-    	
-    	 IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( formQuestionResponse.getQuestion( ).getEntry( ) );
-         String value = "";
-         if ( entryTypeService instanceof EntryTypeComment )
-         {
-             Entry entry = formQuestionResponse.getQuestion( ).getEntry( );
-             Field fieldFile = entry.getFieldByCode( IEntryTypeService.FIELD_DOWNLOADABLE_FILE );
-             if ( fieldFile != null )
-             {
-                 IFileStoreServiceProvider fileStoreprovider = FileService.getInstance( ).getFileStoreServiceProvider( "formsDatabaseFileStoreProvider" );
 
-                 Map<String, String> additionnalData = new HashMap<>( );
-                 additionnalData.put( FileService.PARAMETER_RESOURCE_ID, String.valueOf( entry.getIdResource( ) ) );
-                 additionnalData.put( FileService.PARAMETER_RESOURCE_TYPE, Form.RESOURCE_TYPE );
-                 additionnalData.put( FileService.PARAMETER_PROVIDER, fileStoreprovider.getName( ) );
+        IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( formQuestionResponse.getQuestion( ).getEntry( ) );
+        String value = "";
+        if ( entryTypeService instanceof EntryTypeComment )
+        {
+            Entry entry = formQuestionResponse.getQuestion( ).getEntry( );
+            Field fieldFile = entry.getFieldByCode( IEntryTypeService.FIELD_DOWNLOADABLE_FILE );
+            if ( fieldFile != null )
+            {
+                IFileStoreServiceProvider fileStoreprovider = FileService.getInstance( ).getFileStoreServiceProvider( "formsDatabaseFileStoreProvider" );
 
-                 value = fileStoreprovider.getFileDownloadUrlFO( fieldFile.getValue( ), additionnalData );
-             }
-         }
-         else if ( CollectionUtils.isNotEmpty( formQuestionResponse.getEntryResponse( ) ) )
-         {
-             	  value = formQuestionResponse.getEntryResponse( ).stream( ).map(
-                           response -> entryTypeService.getResponseValueForRecap( formQuestionResponse.getQuestion( ).getEntry( ), null, response, null ) )
-                           .filter( StringUtils::isNotEmpty ).collect( Collectors.joining( ", " ) );
-         }
-         return value;
+                Map<String, String> additionnalData = new HashMap<>( );
+                additionnalData.put( FileService.PARAMETER_RESOURCE_ID, String.valueOf( entry.getIdResource( ) ) );
+                additionnalData.put( FileService.PARAMETER_RESOURCE_TYPE, Form.RESOURCE_TYPE );
+                additionnalData.put( FileService.PARAMETER_PROVIDER, fileStoreprovider.getName( ) );
+
+                value = fileStoreprovider.getFileDownloadUrlFO( fieldFile.getValue( ), additionnalData );
+            }
+        } else if (entryTypeService instanceof EntryTypeFile) {
+            List <Response> responses = formQuestionResponse.getEntryResponse();
+            File file = null;
+            for (int i = 0; i < responses.size(); i++)
+            {
+                if (responses.get(i).getFile() != null)
+                {
+                    file = FileHome.findByPrimaryKey( responses.get(i).getFile().getIdFile( ) );
+                    if ( file != null)
+                    {
+                        try {
+                            IFileStoreServiceProvider fss = FileService.getInstance( ).getFileStoreServiceProvider( file.getOrigin() );
+                            file = fss.getFile(file.getFileKey() );
+
+                            file.setUrl(fss.getFileDownloadUrlFO( file.getFileKey()));
+
+                            responses.get(i).setFile( file );
+                        }
+                        catch (FileServiceException e) {
+                            AppLogService.error("Error getting file from file store service provider", e);
+                        }
+                    }
+                }
+                value += file.getTitle()+": "+_strBaseUrl+file.getUrl()+"\n";
+            }
+            return value;
+        }
+        if ( CollectionUtils.isNotEmpty( formQuestionResponse.getEntryResponse( ) ) )
+        {
+            value = formQuestionResponse.getEntryResponse( ).stream( ).map(
+                            response -> entryTypeService.getResponseValueForRecap( formQuestionResponse.getQuestion( ).getEntry( ), null, response, null ) )
+                    .filter( StringUtils::isNotEmpty ).collect( Collectors.joining( ", " ) );
+        }
+        return value;
     }
     /**
      * Set value in infoMarker
@@ -349,7 +370,7 @@ public class FormsProvider implements IProvider
      * @param value the value to set
      */
     private void setValue( InfoMarker notifyMarker, String value ) {
-    	if ( notifyMarker.getValue( ) == null )
+        if ( notifyMarker.getValue( ) == null )
         {
             notifyMarker.setValue( value );
         }
@@ -359,8 +380,8 @@ public class FormsProvider implements IProvider
         }
         AppLogService.debug( "Adding infomarker {} = {}", notifyMarker.getMarker( ),  notifyMarker.getValue( ) );
     }
-    
-   
+
+
     /**
      * Get the form response string value with given nIdResponse and given formResponse
      * @param formQuestionresponseList
@@ -373,7 +394,7 @@ public class FormsProvider implements IProvider
      */
     private String getFormResponseStringValue( List<FormQuestionResponse> formQuestionresponseList,  int nIdResponse, FormResponse formResponse )
     {
-    	List<Response> responseList =formQuestionresponseList.stream( ).filter( response -> response.getQuestion( ).getId( ) == nIdResponse ).findFirst( ).map( FormQuestionResponse::getEntryResponse )
+        List<Response> responseList =formQuestionresponseList.stream( ).filter( response -> response.getQuestion( ).getId( ) == nIdResponse ).findFirst( ).map( FormQuestionResponse::getEntryResponse )
                 .orElse( null );
 
         if ( CollectionUtils.isNotEmpty( responseList ) )
