@@ -29,6 +29,11 @@ public class Constants {
     public static final String MESSAGE_UPDATE_TIME = "forms.marker.provider.url.detail.reponse.update_time";
     public static final String MARK_UPDATE_DATE = "update_date";
     public static final String MESSAGE_UPDATE_DATE = "forms.marker.provider.url.detail.reponse.update_date";
+    
+    public static final String MARK_QRCODE_URL_BO = "url_bo_forms_qrcode";
+    public static final String MESSAGE_URL_QR_CODE_BO = "forms.marker.provider.url.admin.detail.reponse.urlqrcode";
+    public static final String MARK_QRCODE_URL_FO = "url_fo_forms_qrcode";
+    public static final String MESSAGE_URL_QR_CODE_FO = "forms.marker.provider.url.fo.detail.reponse.urlqrcode";
 	private Constants() {}
 
 }
