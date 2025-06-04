@@ -13,6 +13,7 @@ public class Constants {
     
     // MARKS
     public static final String MARK_POSITION = "position_";
+    public static final String MARK_POSITION_ITERATION = "_";
     public static final String MARK_URL_ADMIN_RESPONSE = "url_admin_forms_response_detail";
 	
     // Messages

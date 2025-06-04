@@ -243,13 +243,21 @@ public class FormsProvider implements IProvider
         List<FormQuestionResponse> listFormQuestionResponse = FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( _nIdFormResponse );
 
         Map<Integer, InfoMarker> markers = new HashMap<>( );
+        List<InfoMarker> iterativeMarkers = new ArrayList<>();
+
         if(_strProviderId.startsWith( Constants.ALL_FORMS ) )
         {
             for ( FormQuestionResponse formQuestionResponse : listFormQuestionResponse )
             {
                 InfoMarker notifyMarker = markers.computeIfAbsent( formQuestionResponse.getQuestion( ).getId( ),
                         k  -> new InfoMarker( formQuestionResponse.getQuestion( ).getCode() ) );
-                setValue(  notifyMarker, getValue( formQuestionResponse ) );
+                String value = getValue( formQuestionResponse );
+                setValue( notifyMarker, value );
+
+                InfoMarker iterativeMarker = new InfoMarker(formQuestionResponse.getQuestion( ).getCode() +
+                        Constants.MARK_POSITION_ITERATION + formQuestionResponse.getQuestion().getIterationNumber());
+                iterativeMarkers.add( iterativeMarker );
+                setValue( iterativeMarker, value );
 
             }
         }else {
@@ -257,10 +265,17 @@ public class FormsProvider implements IProvider
             {
                 InfoMarker notifyMarker = markers.computeIfAbsent( formQuestionResponse.getQuestion( ).getId( ),
                         k  -> new InfoMarker( Constants.MARK_POSITION + formQuestionResponse.getQuestion( ).getId( ) ) );
-                setValue(  notifyMarker, getValue( formQuestionResponse ) );
+                String value = getValue( formQuestionResponse );
+                setValue(  notifyMarker,  value );
+
+                InfoMarker iterativeMarker = new InfoMarker(Constants.MARK_POSITION + formQuestionResponse.getQuestion().getId() +
+                        Constants.MARK_POSITION_ITERATION + formQuestionResponse.getQuestion().getIterationNumber());
+                iterativeMarkers.add( iterativeMarker );
+                setValue( iterativeMarker, value );
             }
         }
         result.addAll( markers.values( ) );
+        result.addAll( iterativeMarkers );
 
         FormResponse formResponse = FormResponseHome.findByPrimaryKey( _nIdFormResponse );
 
