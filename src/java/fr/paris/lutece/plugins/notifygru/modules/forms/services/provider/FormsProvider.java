@@ -40,7 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.plugins.forms.service.entrytype.EntryTypeFile;
 import fr.paris.lutece.portal.business.file.File;
@@ -335,7 +336,7 @@ public class FormsProvider implements IProvider
             Field fieldFile = entry.getFieldByCode( IEntryTypeService.FIELD_DOWNLOADABLE_FILE );
             if ( fieldFile != null )
             {
-                IFileStoreServiceProvider fileStoreprovider = FileService.getInstance( ).getFileStoreServiceProvider( "formsDatabaseFileStoreProvider" );
+                IFileStoreServiceProvider fileStoreprovider = CDI.current( ).select( FileService.class ).get( ).getFileStoreServiceProvider( "formsDatabaseFileStoreProvider" );
 
                 Map<String, String> additionnalData = new HashMap<>( );
                 additionnalData.put( FileService.PARAMETER_RESOURCE_ID, String.valueOf( entry.getIdResource( ) ) );
@@ -355,7 +356,7 @@ public class FormsProvider implements IProvider
                     if ( file != null)
                     {
                         try {
-                            IFileStoreServiceProvider fss = FileService.getInstance( ).getFileStoreServiceProvider( file.getOrigin() );
+                            IFileStoreServiceProvider fss = CDI.current( ).select( FileService.class ).get( ).getFileStoreServiceProvider( file.getOrigin() );
                             file = fss.getFile(file.getFileKey() );
 
                             file.setUrl(fss.getFileDownloadUrlFO( file.getFileKey()));
