@@ -44,12 +44,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
-import fr.paris.lutece.plugins.modulenotifygrumappingmanager.service.AbstractProviderManagerWithMapping;
+import fr.paris.lutece.plugins.modulenotifygrumappingmanager.service.IProviderManagerWithMapping;
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
-import fr.paris.lutece.plugins.workflowcore.service.action.ActionService;
+import fr.paris.lutece.plugins.workflowcore.service.action.IActionService;
 import fr.paris.lutece.plugins.workflowcore.service.provider.IProvider;
 import fr.paris.lutece.plugins.workflowcore.service.provider.InfoMarker;
 import fr.paris.lutece.plugins.workflowcore.service.provider.ProviderDescription;
@@ -59,33 +61,32 @@ import fr.paris.lutece.util.ReferenceList;
 
 /**
  * <p>
- * This class represents a provider manager for {@link Directory} objects
+ * This class represents a provider manager for {@link Form} objects
  * </p>
  * <p>
- * One provider per {@code Directory} object
+ * One provider per {@code Form} object
  * </p>
  *
  */
-public class FormsProviderManager extends AbstractProviderManagerWithMapping
+@ApplicationScoped
+@Named( FormsProviderManager.ID )
+public class FormsProviderManager implements IProviderManagerWithMapping
 {
+	public static final String ID = "notifygru-forms.ProviderService";
     @Inject
-    private ActionService _actionService;
+    private IActionService _actionService;
 
     /**
      * Constructor
-     * 
-     * @param strId
-     *            the id of this provider manager
      */
-    public FormsProviderManager( String strId )
+    public FormsProviderManager( )
     {
-        super( strId );
     }
 
     /**
      * {@inheritDoc}
      * <p>
-     * Only the providers for directories linked to the current workflow are returned
+     * Only the providers for forms linked to the current workflow are returned
      * </p>
      */
     @Override
@@ -222,6 +223,13 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
         collectionNotifyMarkers.add( updateTimeMarker );
         return collectionNotifyMarkers;
     }
-    
 
+    /**
+     * {@inheritDoc}
+     * 
+     */
+    public String getId( )
+    {
+        return ID;
+    }
 }
