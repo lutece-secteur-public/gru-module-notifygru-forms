@@ -220,6 +220,12 @@ public class FormsProviderManager extends AbstractProviderManagerWithMapping
         collectionNotifyMarkers.add( creationTimeMarker );
         collectionNotifyMarkers.add( updateDateMarker );
         collectionNotifyMarkers.add( updateTimeMarker );
+        InfoMarker urlQrCodeBo = new InfoMarker( Constants.MARK_QRCODE_URL_BO );
+        urlQrCodeBo.setDescription( I18nService.getLocalizedString( Constants.MESSAGE_URL_QR_CODE_BO, I18nService.getDefaultLocale( ) ) );
+        InfoMarker urlQrCodeFo = new InfoMarker( Constants.MARK_QRCODE_URL_FO );
+        urlQrCodeFo.setDescription( I18nService.getLocalizedString( Constants.MESSAGE_URL_QR_CODE_FO, I18nService.getDefaultLocale( ) ) );
+        collectionNotifyMarkers.add(urlQrCodeBo);
+        collectionNotifyMarkers.add(urlQrCodeFo);
         return collectionNotifyMarkers;
     }
     
