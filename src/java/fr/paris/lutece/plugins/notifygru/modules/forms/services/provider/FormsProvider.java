@@ -366,9 +366,9 @@ public class FormsProvider implements IProvider
                         catch (FileServiceException e) {
                             AppLogService.error("Error getting file from file store service provider", e);
                         }
+                        value += file.getTitle()+": "+_strBaseUrl+file.getUrl()+"\n";
                     }
                 }
-                value += file.getTitle()+": "+_strBaseUrl+file.getUrl()+"\n";
             }
             return value;
         }
