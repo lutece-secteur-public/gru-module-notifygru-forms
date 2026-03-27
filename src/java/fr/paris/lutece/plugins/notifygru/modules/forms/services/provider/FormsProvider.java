@@ -334,16 +334,19 @@ public class FormsProvider implements IProvider
         {
             Entry entry = formQuestionResponse.getQuestion( ).getEntry( );
             Field fieldFile = entry.getFieldByCode( IEntryTypeService.FIELD_DOWNLOADABLE_FILE );
-            if ( fieldFile != null )
+            if ( fieldFile != null && StringUtils.isNotEmpty( fieldFile.getValue() ) )
             {
-                IFileStoreServiceProvider fileStoreprovider = CDI.current( ).select( FileService.class ).get( ).getFileStoreServiceProvider( "formsDatabaseFileStoreProvider" );
+                File file = FileHome.findByPrimaryKey( Integer.parseInt( fieldFile.getValue() ) );
+                if ( file != null)
+                {
+                    IFileStoreServiceProvider fileStoreprovider = CDI.current( ).select( FileService.class ).get( ).getFileStoreServiceProvider( file.getOrigin() );
+                    Map<String, String> additionnalData = new HashMap<>( );
+                    additionnalData.put( FileService.PARAMETER_RESOURCE_ID, String.valueOf( entry.getIdResource( ) ) );
+                    additionnalData.put( FileService.PARAMETER_RESOURCE_TYPE, Form.RESOURCE_TYPE );
+                    additionnalData.put( FileService.PARAMETER_PROVIDER, fileStoreprovider.getName( ) );
 
-                Map<String, String> additionnalData = new HashMap<>( );
-                additionnalData.put( FileService.PARAMETER_RESOURCE_ID, String.valueOf( entry.getIdResource( ) ) );
-                additionnalData.put( FileService.PARAMETER_RESOURCE_TYPE, Form.RESOURCE_TYPE );
-                additionnalData.put( FileService.PARAMETER_PROVIDER, fileStoreprovider.getName( ) );
-
-                value = fileStoreprovider.getFileDownloadUrlFO( fieldFile.getValue( ), additionnalData );
+                    value = fileStoreprovider.getFileDownloadUrlFO( fieldFile.getValue( ), additionnalData );
+                }
             }
         } else if (entryTypeService instanceof EntryTypeFile) {
             List <Response> responses = formQuestionResponse.getEntryResponse();
