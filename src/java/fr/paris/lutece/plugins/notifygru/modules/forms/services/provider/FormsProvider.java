@@ -103,6 +103,10 @@ public class FormsProvider implements IProvider
     private static final String MARK_STATUS = "status";
     private static final String MARK_STATUS_UPDATE_DATE = "update_date_status";
     private static final String MARK_URL_FO_FILES_LINK = "url_fo_forms_files_link";
+    private static final String MARK_QRCODE_URL_BO = "url_bo_forms_qrcode";
+    private static final String MARK_QRCODE_URL_FO = "url_fo_forms_qrcode";
+    
+    private static final String PROPERTY_QRCODE_URL = "workflow-notifygru.qrcode.url";
 
     // PARAMETERS
     public static final String PARAMETER_VIEW_FORM_RESPONSE_DETAILS = "view_form_response_details";
@@ -111,6 +115,7 @@ public class FormsProvider implements IProvider
     public static final String PARAMETER_ID_FORM_RESPONSES_FO = "id_response";
     public static final String PARAMETER_PAGE_FORM_RESPONSE = "formsResponse";
     private static final String PARAMETER_VIEW_FORM_FILES_LINK_FO = "formFileView";
+    private static final String PARAMETER_QRCODE_MESSAGE_TO_ENCODE = "msg";
 
 
     /**
@@ -317,6 +322,20 @@ public class FormsProvider implements IProvider
         InfoMarker updateStatusDateMarker = new InfoMarker( MARK_STATUS_UPDATE_DATE );
         updateStatusDateMarker.setValue( formResponse.getUpdateStatus( ).toString( ) );
         result.add( updateStatusDateMarker );
+        
+        String _strURLQrCode = AppPropertiesService.getProperty(PROPERTY_QRCODE_URL).startsWith("http") ? AppPropertiesService.getProperty(PROPERTY_QRCODE_URL) : ( AppPathService.getBaseUrl( _request ) + AppPropertiesService.getProperty( PROPERTY_QRCODE_URL ) );
+        
+        InfoMarker notifyMarkerQrCodeBoUrl = new InfoMarker( MARK_QRCODE_URL_BO );
+        UrlItem urlQrCodeBo = new UrlItem( _strURLQrCode );
+        urlQrCodeBo.addParameter( PARAMETER_QRCODE_MESSAGE_TO_ENCODE, url.getUrl( ).replaceAll( ":", "%3A" ).replaceAll( "/", "%2F" ).replaceAll( "\\?", "%3F" ).replaceAll( "=", "%3D" ).replaceAll( "&", "%26" ) );
+        notifyMarkerQrCodeBoUrl.setValue( urlQrCodeBo.getUrl( ) );
+        result.add( notifyMarkerQrCodeBoUrl );
+        
+        InfoMarker notifyMarkerQrCodeFoUrl = new InfoMarker( MARK_QRCODE_URL_FO );
+        UrlItem urlQrCodeFo = new UrlItem( _strURLQrCode );
+        urlQrCodeFo.addParameter( PARAMETER_QRCODE_MESSAGE_TO_ENCODE, urlFO.getUrl( ).replaceAll( ":", "%3A" ).replaceAll( "/", "%2F" ).replaceAll( "\\?", "%3F" ).replaceAll( "=", "%3D" ).replaceAll( "&", "%26" ) );
+        notifyMarkerQrCodeFoUrl.setValue( urlQrCodeFo.getUrl( ) );
+        result.add( notifyMarkerQrCodeFoUrl );
 
         return result;
     }
