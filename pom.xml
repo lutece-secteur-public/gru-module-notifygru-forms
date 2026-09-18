@@ -3,7 +3,7 @@
     <parent>
         <artifactId>lutece-global-pom</artifactId>
         <groupId>fr.paris.lutece.tools</groupId>
-        <version>8.0.0</version>
+        <version>8.0.2</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -36,25 +36,25 @@
         <dependency>
             <groupId>fr.paris.lutece</groupId>
             <artifactId>lutece-core</artifactId>
-            <version>[8.0.0-SNAPSHOT,)</version>
+            <version>[8.0.0,)</version>
             <type>lutece-core</type>
         </dependency>
         <dependency>
             <groupId>fr.paris.lutece.plugins</groupId>
             <artifactId>plugin-forms</artifactId>
-            <version>[4.0.0-SNAPSHOT,)</version>
+            <version>[4.0.0,)</version>
             <type>lutece-plugin</type>
         </dependency>
         <dependency>
             <groupId>fr.paris.lutece.plugins</groupId>
             <artifactId>plugin-workflow</artifactId>
-            <version>[7.0.0-SNAPSHOT,)</version>
+            <version>[7.0.0,)</version>
             <type>lutece-plugin</type>
         </dependency>
         <dependency>
             <groupId>fr.paris.lutece.plugins</groupId>
             <artifactId>plugin-modulenotifygrumappingmanager</artifactId>
-            <version>[3.0.0-SNAPSHOT,)</version>
+            <version>[3.0.0,)</version>
             <type>lutece-plugin</type>
         </dependency>
     </dependencies>
