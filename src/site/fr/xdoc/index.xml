@@ -35,6 +35,14 @@
                     <li>Dans la seconde étape de la configuration, vous pouvez ajouter les entrées de formulaire dans les notifications en utilisant les signets. Le tableau à droite de la page vous indique quels signets vous pouvez utiliser.</li>
                 </ul> 
                 </p>  
+                <p>
+                La valeur d'un signet de question (<code>position_&lt;id&gt;</code>, ou le code de la question pour le
+                <em>provider</em> &#171; All Forms &#187;, et leurs signets d'it&#233;ration) est du HTML : les r&#233;ponses de
+                l'usager sont &#233;chapp&#233;es, les r&#233;ponses &#224; une question r&#233;p&#233;t&#233;e sont s&#233;par&#233;es
+                par un saut de ligne (<code>&lt;br&gt;</code>), et une r&#233;ponse saisie avec un &#233;diteur de texte riche reste
+                du HTML. La t&#226;che de notification &#233;crit ces signets en HTML assaini dans un message HTML et en texte brut
+                dans un SMS, un objet ou un texte de statut.
+                </p>
             </subsection>
         </section>
     </body>
