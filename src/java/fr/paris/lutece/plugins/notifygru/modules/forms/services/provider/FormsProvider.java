@@ -49,6 +49,7 @@ import fr.paris.lutece.portal.business.file.FileHome;
 import fr.paris.lutece.portal.service.file.FileServiceException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import fr.paris.lutece.plugins.forms.business.Form;
 import fr.paris.lutece.plugins.forms.business.FormQuestionResponse;
@@ -347,9 +348,13 @@ public class FormsProvider implements IProvider
         return result;
     }
     /**
-     * Get value of formQuestionResponse
+     * Get the value of a formQuestionResponse, as HTML: the responses of the user are escaped, a rich text response
+     * (text area with a rich text editor) is kept as the HTML entered, to be sanitized by the notification that renders
+     * it.
+     *
      * @param formQuestionResponse
-     * @return value
+     *            the form question response
+     * @return the HTML value
      */
     private String getValue(FormQuestionResponse formQuestionResponse) {
 
@@ -370,7 +375,7 @@ public class FormsProvider implements IProvider
                     additionnalData.put( FileService.PARAMETER_RESOURCE_TYPE, Form.RESOURCE_TYPE );
                     additionnalData.put( FileService.PARAMETER_PROVIDER, fileStoreprovider.getName( ) );
 
-                    value = fileStoreprovider.getFileDownloadUrlFO( fieldFile.getValue( ), additionnalData );
+                    value = StringEscapeUtils.escapeHtml4( fileStoreprovider.getFileDownloadUrlFO( fieldFile.getValue( ), additionnalData ) );
                 }
             }
         } else if (entryTypeService instanceof EntryTypeFile) {
@@ -394,7 +399,7 @@ public class FormsProvider implements IProvider
                         catch (FileServiceException e) {
                             AppLogService.error("Error getting file from file store service provider", e);
                         }
-                        value += file.getTitle()+": "+_strBaseUrl+file.getUrl()+"\n";
+                        value += fileToHtml( file.getTitle( ), _strBaseUrl + file.getUrl( ) );
                     }
                 }
             }
@@ -402,18 +407,53 @@ public class FormsProvider implements IProvider
         }
         if ( CollectionUtils.isNotEmpty( formQuestionResponse.getEntryResponse( ) ) )
         {
+            Entry entry = formQuestionResponse.getQuestion( ).getEntry( );
+            Field fieldRichText = entry.getFieldByCode( IEntryTypeService.FIELD_RICHTEXT );
+            boolean bRichText = fieldRichText != null && Boolean.parseBoolean( fieldRichText.getValue( ) );
             value = formQuestionResponse.getEntryResponse( ).stream( ).map(
-                            response -> entryTypeService.getResponseValueForRecap( formQuestionResponse.getQuestion( ).getEntry( ), null, response, null ) )
-                    .filter( StringUtils::isNotEmpty ).collect( Collectors.joining( ", " ) );
+                            response -> entryTypeService.getResponseValueForRecap( entry, null, response, null ) )
+                    .filter( StringUtils::isNotEmpty ).map( strResponse -> responseToHtml( strResponse, bRichText ) )
+                    .collect( Collectors.joining( ", " ) );
         }
         return value;
     }
     /**
-     * Set value in infoMarker
-     * @param notifyMarker the InfoMarker
-     * @param value the value to set
+     * Gives a response of the user as HTML.
+     *
+     * @param strResponse
+     *            the response value
+     * @param bRichText
+     *            true when the response is rich text (HTML entered with a rich text editor): it is kept as is and
+     *            sanitized by the notification that renders it; otherwise it is escaped
+     * @return the HTML
      */
-    private void setValue( InfoMarker notifyMarker, String value ) {
+    static String responseToHtml( String strResponse, boolean bRichText )
+    {
+        return bRichText ? strResponse : StringEscapeUtils.escapeHtml4( strResponse );
+    }
+
+    /**
+     * Gives the line of a file response as HTML: the title, given by the user, and the URL are escaped.
+     *
+     * @param strTitle
+     *            the file title
+     * @param strUrl
+     *            the download URL
+     * @return the HTML line, ended by a new line
+     */
+    static String fileToHtml( String strTitle, String strUrl )
+    {
+        return StringEscapeUtils.escapeHtml4( strTitle ) + ": " + StringEscapeUtils.escapeHtml4( strUrl ) + "\n";
+    }
+
+    /**
+     * Set value in infoMarker. The value of a question marker is HTML: the values of the responses to a repeated
+     * question (iterations) are separated by a line break, <code>&lt;br&gt;</code>.
+     *
+     * @param notifyMarker the InfoMarker
+     * @param value the HTML value to set, built from escaped parts
+     */
+    static void setValue( InfoMarker notifyMarker, String value ) {
         if ( notifyMarker.getValue( ) == null )
         {
             notifyMarker.setValue( value );

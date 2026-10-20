@@ -35,6 +35,13 @@
                     <li>In the second step of the configuration, you can add the form entries in the notifications by using the markers. The table in the right side of the page tells you which markers you can use.</li>
                 </ul> 
                 </p>  
+                <p>
+                The value of a question marker (<code>position_&lt;id&gt;</code>, or the question code for the provider "All Forms",
+                and their iteration markers) is HTML: the responses of the user are escaped, the responses to a repeated question
+                are separated by a line break (<code>&lt;br&gt;</code>), and a response entered with a rich text editor is kept as
+                HTML. The notification task renders these markers as sanitized HTML in an HTML message and as plain text in a
+                SMS, a subject or a status text.
+                </p>
             </subsection>
         </section>
     </body>
