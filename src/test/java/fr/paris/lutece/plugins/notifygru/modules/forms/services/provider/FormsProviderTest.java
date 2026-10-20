@@ -34,13 +34,10 @@
 package fr.paris.lutece.plugins.notifygru.modules.forms.services.provider;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 import fr.paris.lutece.plugins.workflowcore.service.provider.InfoMarker;
-import fr.paris.lutece.portal.service.html.OwaspXSSSanitizer;
 
 /**
  * The values of the question markers (LUT-33153): HTML built from the escaped responses of the user, the responses to a
@@ -62,21 +59,13 @@ public class FormsProviderTest
     }
 
     /**
-     * A rich text response stays HTML; the notification sanitizes it, removing the script and keeping the formatting.
+     * A rich text response stays HTML: notifygru sanitizes it when it renders the message (rich provider markers).
      */
     @Test
-    public void testRichTextResponseIsKeptThenSanitized( )
+    public void testRichTextResponseIsKept( )
     {
         String strRichText = "<p>Bonjour <strong>agent</strong></p><script>alert(1)</script><img src=x onerror=alert(2)>";
         assertEquals( strRichText, FormsProvider.responseToHtml( strRichText, true ) );
-
-        OwaspXSSSanitizer sanitizer = new OwaspXSSSanitizer( );
-        sanitizer.init( );
-        String strSanitized = sanitizer.sanitize( FormsProvider.responseToHtml( strRichText, true ) );
-
-        assertTrue( strSanitized.contains( "<strong>agent</strong>" ), strSanitized );
-        assertFalse( strSanitized.contains( "<script" ), strSanitized );
-        assertFalse( strSanitized.contains( "onerror" ), strSanitized );
     }
 
     /**
@@ -101,26 +90,5 @@ public class FormsProviderTest
 
         FormsProvider.setValue( marker, FormsProvider.responseToHtml( HOSTILE_RESPONSE, false ) );
         assertEquals( "first &lt;i&gt;one&lt;/i&gt;<br>" + HOSTILE_RESPONSE_HTML, marker.getValue( ) );
-    }
-
-    /**
-     * Once sanitized, the way an HTML notification writes the marker, the joined value keeps its line break and the
-     * hostile response stays text.
-     */
-    @Test
-    public void testJoinedValueKeepsItsLineBreakOnceSanitized( )
-    {
-        InfoMarker marker = new InfoMarker( "code_question" );
-        FormsProvider.setValue( marker, FormsProvider.responseToHtml( "first", false ) );
-        FormsProvider.setValue( marker, FormsProvider.responseToHtml( HOSTILE_RESPONSE, false ) );
-
-        OwaspXSSSanitizer sanitizer = new OwaspXSSSanitizer( );
-        sanitizer.init( );
-        String strSanitized = sanitizer.sanitize( marker.getValue( ) );
-
-        assertTrue( strSanitized.startsWith( "first<br" ), strSanitized );
-        assertTrue( strSanitized.contains( "&lt;script&gt;" ), strSanitized );
-        assertFalse( strSanitized.contains( "<script" ), strSanitized );
-        assertFalse( strSanitized.contains( "<b>" ), strSanitized );
     }
 }
