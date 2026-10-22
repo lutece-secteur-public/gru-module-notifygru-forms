@@ -75,6 +75,7 @@ import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.file.FileUtil;
 import fr.paris.lutece.util.url.UrlItem;
 
 /**
@@ -234,6 +235,19 @@ public class FormsProvider implements IProvider
         return _strCustomerPhoneNumber;
     }
     /**
+     * Gets the bookmark of a question named after its code, as proposed by the forms provider when the bookmarks use the question codes (code_ followed by
+     * the normalized code of the question)
+     *
+     * @param formQuestionResponse
+     *            the response to the question
+     * @return the bookmark name
+     */
+    private static String getQuestionCodeMarker( FormQuestionResponse formQuestionResponse )
+    {
+        return FormsConstants.MARK_CODE + FileUtil.normalizeFileName( formQuestionResponse.getQuestion( ).getCode( ) );
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -244,6 +258,7 @@ public class FormsProvider implements IProvider
         List<FormQuestionResponse> listFormQuestionResponse = FormQuestionResponseHome.getFormQuestionResponseListByFormResponse( _nIdFormResponse );
 
         Map<Integer, InfoMarker> markers = new HashMap<>( );
+        Map<Integer, InfoMarker> codeMarkers = new HashMap<>( );
         List<InfoMarker> iterativeMarkers = new ArrayList<>();
 
         if(_strProviderId.startsWith( Constants.ALL_FORMS ) )
@@ -273,9 +288,19 @@ public class FormsProvider implements IProvider
                         Constants.MARK_POSITION_ITERATION + formQuestionResponse.getQuestion().getIterationNumber());
                 iterativeMarkers.add( iterativeMarker );
                 setValue( iterativeMarker, value );
+
+                String strCodeMarker = getQuestionCodeMarker( formQuestionResponse );
+                InfoMarker codeMarker = codeMarkers.computeIfAbsent( formQuestionResponse.getQuestion( ).getId( ), k -> new InfoMarker( strCodeMarker ) );
+                setValue( codeMarker, value );
+
+                InfoMarker iterativeCodeMarker = new InfoMarker( strCodeMarker + Constants.MARK_POSITION_ITERATION
+                        + formQuestionResponse.getQuestion( ).getIterationNumber( ) );
+                iterativeMarkers.add( iterativeCodeMarker );
+                setValue( iterativeCodeMarker, value );
             }
         }
         result.addAll( markers.values( ) );
+        result.addAll( codeMarkers.values( ) );
         result.addAll( iterativeMarkers );
 
         FormResponse formResponse = FormResponseHome.findByPrimaryKey( _nIdFormResponse );
