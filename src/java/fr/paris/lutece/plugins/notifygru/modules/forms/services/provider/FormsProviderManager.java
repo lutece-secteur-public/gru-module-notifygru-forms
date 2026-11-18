@@ -132,6 +132,12 @@ public class FormsProviderManager implements IProviderManagerWithMapping
     		
     		Form form = FormHome.findByPrimaryKey( Integer.parseInt( strProviderId ) );
 
+    		if ( form == null )
+    		{
+    		    // the form was deleted after the configuration of the task
+    		    return null;
+    		}
+
              providerDescription = new ProviderDescription( String.valueOf( form.getId( ) ),
                     I18nService.getLocalizedString( Constants.TITLE_I18NKEY, I18nService.getDefaultLocale( ) ) + form.getTitle( ) );
 
