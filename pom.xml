@@ -10,7 +10,7 @@
     <groupId>fr.paris.lutece.plugins</groupId>
     <artifactId>module-notifygru-forms</artifactId>
     <packaging>lutece-plugin</packaging>
-    <version>1.2.4-beta-01</version>
+    <version>1.2.4</version>
     <name>Lutece notifygru Forms module</name>
 
     <repositories>
