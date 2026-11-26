@@ -35,6 +35,11 @@ package fr.paris.lutece.plugins.notifygru.modules.forms.services.provider;
 
 import fr.paris.lutece.plugins.forms.business.Form;
 import fr.paris.lutece.plugins.forms.business.FormHome;
+import fr.paris.lutece.plugins.forms.business.FormResponse;
+import fr.paris.lutece.plugins.forms.business.FormResponseHome;
+import fr.paris.lutece.plugins.modulenotifygrumappingmanager.business.NotifygruMappingManagerHome;
+import fr.paris.lutece.plugins.workflow.service.provider.ProviderManagerUtil;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.plugins.forms.business.Question;
 import fr.paris.lutece.plugins.forms.business.QuestionHome;
 import fr.paris.lutece.plugins.forms.service.provider.GenericFormsProvider;
@@ -155,6 +160,23 @@ public class FormsProviderManager implements IProviderManagerWithMapping
     @Override
     public IProvider createProvider( String strProviderId, ResourceHistory resourceHistory, HttpServletRequest request )
     {
+        if ( resourceHistory == null )
+        {
+            return null;
+        }
+        FormResponse formResponse = FormResponseHome.findByPrimaryKey( resourceHistory.getIdResource( ) );
+        if ( formResponse == null )
+        {
+            AppLogService.getLogger( ).warn( "NotifyGru forms provider: the form response " + resourceHistory.getIdResource( ) + " no longer exists, no notification is sent" );
+            return null;
+        }
+        String strCompleteProviderId = ProviderManagerUtil.buildCompleteProviderId( getId( ), String.valueOf( formResponse.getFormId( ) ) );
+        if ( NotifygruMappingManagerHome.findByPrimaryKey( strCompleteProviderId ) == null )
+        {
+            AppLogService.getLogger( ).warn( "NotifyGru forms provider: no mapping found for the form " + formResponse.getFormId( )
+                    + " (check the configuration of the notifygru mapping manager), no notification is sent for the form response " + formResponse.getId( ) );
+            return null;
+        }
         return new FormsProvider( getId( ), strProviderId, resourceHistory, request );
     }
 
