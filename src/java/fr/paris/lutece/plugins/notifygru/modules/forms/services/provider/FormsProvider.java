@@ -47,6 +47,7 @@ import fr.paris.lutece.plugins.forms.service.entrytype.EntryTypeFile;
 import fr.paris.lutece.portal.business.file.File;
 import fr.paris.lutece.portal.business.file.FileHome;
 import fr.paris.lutece.portal.service.file.FileServiceException;
+import fr.paris.lutece.portal.service.i18n.I18nService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -57,6 +58,7 @@ import fr.paris.lutece.plugins.forms.business.FormQuestionResponseHome;
 import fr.paris.lutece.plugins.forms.business.FormResponse;
 import fr.paris.lutece.plugins.forms.business.FormResponseHome;
 import fr.paris.lutece.plugins.forms.service.entrytype.EntryTypeComment;
+import fr.paris.lutece.plugins.forms.service.provider.GroupIterationsMarker;
 import fr.paris.lutece.plugins.forms.util.FormsConstants;
 import fr.paris.lutece.plugins.forms.web.admin.MultiviewFormResponseDetailsJspBean;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
@@ -306,6 +308,13 @@ public class FormsProvider implements IProvider
 
         FormResponse formResponse = FormResponseHome.findByPrimaryKey( _nIdFormResponse );
 
+        if ( !_strProviderId.startsWith( Constants.ALL_FORMS ) )
+        {
+            // every iteration of each iterable group, whatever their number, rendered by forms
+            result.addAll( toGroupMarkers(
+                    GroupIterationsMarker.getMarkerValues( formResponse.getFormId( ), listFormQuestionResponse, I18nService.getDefaultLocale( ) ) ) );
+        }
+
         InfoMarker notifyMarkerUrl = new InfoMarker( Constants.MARK_URL_ADMIN_RESPONSE );
         UrlItem url = new UrlItem( _strBaseUrl + MultiviewFormResponseDetailsJspBean.CONTROLLER_JSP_NAME_WITH_PATH );
         url.addParameter( FormsConstants.PARAMETER_TARGET_VIEW, Constants.PARAMETER_VIEW_FORM_RESPONSE_DETAILS );
@@ -417,6 +426,21 @@ public class FormsProvider implements IProvider
         }
         return value;
     }
+
+    /**
+     * Turns the values of the group bookmarks into markers. The HTML is kept as it is: forms has already escaped the titles and the responses.
+     *
+     * @param mapGroupValues
+     *            the HTML of each group, by bookmark name
+     * @return the markers, in the order of the map
+     */
+    static List<InfoMarker> toGroupMarkers( Map<String, String> mapGroupValues )
+    {
+        List<InfoMarker> listMarker = new ArrayList<>( );
+        mapGroupValues.forEach( ( strMarker, strHtml ) -> listMarker.add( new InfoMarker( strMarker, strHtml ) ) );
+        return listMarker;
+    }
+
     /**
      * Gives a response of the user as HTML.
      *
