@@ -35,6 +35,10 @@ package fr.paris.lutece.plugins.notifygru.modules.forms.services.provider;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import fr.paris.lutece.plugins.workflowcore.service.provider.InfoMarker;
@@ -76,6 +80,25 @@ public class FormsProviderTest
     {
         assertEquals( "photo &lt;img src=x onerror=alert(1)&gt;.png: http://localhost:8080/lutece/file?id=1&amp;key=a&quot;b\n",
                 FormsProvider.fileToHtml( "photo <img src=x onerror=alert(1)>.png", "http://localhost:8080/lutece/file?id=1&key=a\"b" ) );
+    }
+
+    /**
+     * The group bookmarks (LUT-34701) keep the HTML built and escaped by forms as it is, one marker per group, in the order of the groups.
+     */
+    @Test
+    public void testGroupMarkersKeepTheHtmlOfForms( )
+    {
+        Map<String, String> mapGroupValues = new LinkedHashMap<>( );
+        mapGroupValues.put( "group_11", "<strong>Enfants (1)</strong><br>Nom : Paul &amp; co<br><br><strong>Enfants (2)</strong><br>Nom : Julie" );
+        mapGroupValues.put( "group_12", "" );
+
+        List<InfoMarker> listMarker = FormsProvider.toGroupMarkers( mapGroupValues );
+
+        assertEquals( 2, listMarker.size( ) );
+        assertEquals( "group_11", listMarker.get( 0 ).getMarker( ) );
+        assertEquals( "<strong>Enfants (1)</strong><br>Nom : Paul &amp; co<br><br><strong>Enfants (2)</strong><br>Nom : Julie", listMarker.get( 0 ).getValue( ) );
+        assertEquals( "group_12", listMarker.get( 1 ).getMarker( ) );
+        assertEquals( "", listMarker.get( 1 ).getValue( ) );
     }
 
     /**
