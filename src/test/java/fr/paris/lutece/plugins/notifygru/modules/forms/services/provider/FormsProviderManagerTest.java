@@ -34,6 +34,8 @@
 package fr.paris.lutece.plugins.notifygru.modules.forms.services.provider;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 
@@ -45,10 +47,12 @@ import fr.paris.lutece.plugins.forms.business.FormHome;
 import fr.paris.lutece.plugins.forms.business.FormResponse;
 import fr.paris.lutece.plugins.forms.business.FormResponseHome;
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
+import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.test.LuteceTestCase;
 
 /**
- * Provider creation of FormsProviderManager when the configuration is incomplete: the workflow task must get no provider, not an exception.
+ * Provider creation of FormsProviderManager: a form without mapping is a configuration error that makes the action fail (rolled back),
+ * a vanished response or a missing history only gives no provider (no NullPointerException).
  */
 public class FormsProviderManagerTest extends LuteceTestCase
 {
@@ -69,10 +73,11 @@ public class FormsProviderManagerTest extends LuteceTestCase
     }
 
     /**
-     * No mapping for the form of the response: no provider (the task logs a warning and sends nothing), no critical AppException.
+     * No mapping for the form of the response: the action fails with an explicit AppException (rolled back, the response keeps its state),
+     * not a silent success without notification.
      */
     @Test
-    public void testNoProviderWhenTheFormHasNoMapping( )
+    public void testActionFailsWhenTheFormHasNoMapping( )
     {
         _form = new Form( );
         _form.setTitle( "FormsProviderManagerTest" );
@@ -85,7 +90,9 @@ public class FormsProviderManagerTest extends LuteceTestCase
         _formResponse.setSteps( new ArrayList<>( ) );
         FormResponseHome.create( _formResponse );
 
-        assertNull( new FormsProviderManager( ).createProvider( String.valueOf( _form.getId( ) ), history( _formResponse.getId( ) ), null ) );
+        AppException exception = assertThrows( AppException.class,
+                ( ) -> new FormsProviderManager( ).createProvider( String.valueOf( _form.getId( ) ), history( _formResponse.getId( ) ), null ) );
+        assertTrue( exception.getMessage( ).contains( "No mapping found for the form " + _form.getId( ) ), exception.getMessage( ) );
     }
 
     /**

@@ -39,6 +39,7 @@ import fr.paris.lutece.plugins.forms.business.FormResponse;
 import fr.paris.lutece.plugins.forms.business.FormResponseHome;
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.business.NotifygruMappingManagerHome;
 import fr.paris.lutece.plugins.workflow.service.provider.ProviderManagerUtil;
+import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.plugins.forms.business.Question;
 import fr.paris.lutece.plugins.forms.business.QuestionHome;
@@ -173,9 +174,9 @@ public class FormsProviderManager implements IProviderManagerWithMapping
         String strCompleteProviderId = ProviderManagerUtil.buildCompleteProviderId( getId( ), String.valueOf( formResponse.getFormId( ) ) );
         if ( NotifygruMappingManagerHome.findByPrimaryKey( strCompleteProviderId ) == null )
         {
-            AppLogService.getLogger( ).warn( "NotifyGru forms provider: no mapping found for the form " + formResponse.getFormId( )
-                    + " (check the configuration of the notifygru mapping manager), no notification is sent for the form response " + formResponse.getId( ) );
-            return null;
+            // configuration error: the workflow action fails and is rolled back, the response keeps its state
+            throw new AppException( "No mapping found for the form " + formResponse.getFormId( )
+                    + ". Please check the configuration of the module-forms-mappingmanager (form response " + formResponse.getId( ) + ")." );
         }
         return new FormsProvider( getId( ), strProviderId, resourceHistory, request );
     }
